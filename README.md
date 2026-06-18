@@ -1,6 +1,8 @@
-# Portfólio Profissional
+# Portfólio
 
-Portfólio pessoal desenvolvido com HTML, CSS e JavaScript puro. O projeto foi organizado para facilitar manutenção, troca de imagens, atualização de ícones e publicação em serviços de hospedagem estática.
+Este é o meu portfólio profissional, desenvolvido para apresentar minha trajetória, minhas habilidades e meus projetos na área de Engenharia de Software.
+
+O projeto foi organizado com HTML, CSS e JavaScript puro para facilitar manutenção, ajustes visuais e futuras atualizações de conteúdo, imagens e ícones.
 
 ## Estrutura do projeto
 
@@ -18,45 +20,40 @@ portfolio/
 
 ## Tecnologias utilizadas
 
-- HTML5 semântico
-- CSS3 responsivo
-- JavaScript puro
+- HTML5
+- CSS3
+- JavaScript
 - Google Fonts
-- Organização de assets por tipo
+- Organização de assets por imagens e ícones
 
-## Como executar
+## Como eu executo localmente
 
-Abra o arquivo `index.html` diretamente no navegador.
+Para visualizar o portfólio, basta abrir o arquivo `index.html` no navegador.
 
-Também é possível publicar o projeto em qualquer hospedagem estática, como GitHub Pages, Vercel ou Netlify.
+## Como eu atualizo imagens e ícones
 
-## Como trocar imagens e ícones
+As imagens ficam em `assets/images/`.
 
-- Coloque imagens em `assets/images/`.
-- Coloque ícones em `assets/icons/`.
-- Atualize os caminhos no `index.html` quando quiser usar um novo arquivo.
+Os ícones ficam em `assets/icons/`.
+
+Quando eu quiser trocar algum arquivo visual, adiciono o novo arquivo na pasta correta e atualizo o caminho correspondente no `index.html`.
 
 Exemplo:
 
 ```html
-<img src="assets/images/minha-foto.png" alt="Foto de perfil">
+<img src="assets/images/minha-foto.png" alt="Foto de Emanuel Cândido">
 <img src="assets/icons/github.svg" alt="GitHub">
 ```
 
-## Personalização rápida
+## Onde eu personalizo cada parte
 
-- Textos principais: edite o conteúdo no `index.html`.
-- Cores, espaçamentos e responsividade: edite `css/style.css`.
-- Animações e formulário de contato: edite `js/script.js`.
-- Links de redes sociais: procure por GitHub, LinkedIn e CV no `index.html`.
+- `index.html`: textos, links, seções e estrutura da página.
+- `css/style.css`: cores, espaçamentos, responsividade e aparência visual.
+- `js/script.js`: animações, rolagem suave e funcionamento do formulário de contato.
+- `assets/images/`: imagens usadas no portfólio.
+- `assets/icons/`: ícones usados no portfólio.
 
-## Sugestão de publicação no GitHub Pages
-
-1. Envie o projeto para um repositório no GitHub.
-2. Acesse `Settings > Pages`.
-3. Selecione a branch principal e a pasta raiz.
-4. Salve as configurações e aguarde a geração do link.
 
 ## Licença
 
-Este projeto está sob a licença definida no arquivo `LICENSE`.
+A licença do projeto está definida no arquivo `LICENSE`.

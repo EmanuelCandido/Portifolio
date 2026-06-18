@@ -125,7 +125,7 @@
     }
 
     .container {
-      width: min(1120px, calc(100% - 40px));
+      width: min(1440px, calc(100% - clamp(32px, 5vw, 72px)));
       margin: 0 auto;
     }
 
@@ -189,7 +189,7 @@
       top: 18px;
       left: 50%;
       transform: translateX(-50%);
-      width: min(900px, calc(100% - 32px));
+      width: min(1120px, calc(100% - clamp(32px, 8vw, 120px)));
       z-index: 50;
     }
 
@@ -283,8 +283,8 @@
 
     .hero-grid {
       display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 70px;
+      grid-template-columns: minmax(0, 1.05fr) minmax(420px, 0.95fr);
+      gap: clamp(46px, 7vw, 118px);
       align-items: center;
     }
 
@@ -326,16 +326,17 @@
     }
 
     .hero-title {
-      max-width: 680px;
-      font-size: clamp(3.4rem, 7vw, 6.2rem);
+      max-width: 780px;
+      font-size: clamp(3.4rem, 6vw, 6.2rem);
       line-height: 0.96;
-      letter-spacing: -0.075em;
+      letter-spacing: -0.045em;
       font-weight: 800;
       margin-bottom: 26px;
+      padding-inline: 0.035em;
     }
 
     .hero-description {
-      max-width: 520px;
+      max-width: 610px;
       color: var(--white-muted);
       font-size: 1.02rem;
       font-weight: 300;
@@ -396,6 +397,8 @@
     .hero-card {
       border-radius: 30px;
       padding: 30px;
+      width: min(100%, 560px);
+      justify-self: center;
     }
 
     .profile-avatar {
@@ -491,7 +494,7 @@
     }
 
     .divider {
-      width: min(1120px, calc(100% - 40px));
+      width: min(1440px, calc(100% - clamp(32px, 5vw, 72px)));
       height: 1px;
       margin: 0 auto;
       background: linear-gradient(
@@ -1009,6 +1012,10 @@
         grid-template-columns: 1fr;
       }
 
+      .hero-card {
+        justify-self: stretch;
+      }
+
       .skills-grid {
         grid-template-columns: repeat(2, 1fr);
       }
@@ -1024,11 +1031,11 @@
 
     @media (max-width: 720px) {
       .container {
-        width: min(100% - 28px, 1120px);
+        width: min(100% - 28px, 1440px);
       }
 
       .nav {
-        width: min(100% - 22px, 900px);
+        width: min(100% - 22px, 1120px);
       }
 
       .nav-inner {
@@ -1043,6 +1050,7 @@
 
       .hero-title {
         font-size: clamp(3rem, 15vw, 4.6rem);
+        letter-spacing: -0.035em;
       }
 
       section {
