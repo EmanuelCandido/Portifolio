@@ -212,10 +212,14 @@
     .brand {
       display: flex;
       align-items: center;
-      gap: 11px;
+      gap: 8px;
       font-weight: 700;
       font-size: 0.95rem;
       letter-spacing: -0.035em;
+    }
+
+    .brand .silver-text {
+      margin-left: -2px;
     }
 
     .brand-mark {
