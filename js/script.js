@@ -41,5 +41,5 @@ document.getElementById("contactForm").addEventListener("submit", (event) => {
     `Nome: ${name}\nEmail: ${email}\n\nMensagem:\n${message}`
   );
 
-  window.location.href = `mailto:emanuelcandidolima@gmail.com?subject=${subject}&body=${body}`;
+  window.location.href = `mailto:emanoelcandidolima@gmail.com?subject=${subject}&body=${body}`;
 });
