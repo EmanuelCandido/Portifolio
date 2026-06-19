@@ -212,6 +212,7 @@
     .brand {
       display: flex;
       align-items: center;
+      gap: 8px;
       font-weight: 700;
       font-size: 0.95rem;
       letter-spacing: -0.035em;
@@ -219,6 +220,21 @@
 
     .brand .silver-text {
       margin-left: 1px;
+    }
+
+    .brand-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background:
+        linear-gradient(145deg, rgba(255,255,255,0.16), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,255,255,0.13);
+      color: var(--silver-light);
+      font-size: 0.72rem;
+      font-weight: 900;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.16);
     }
 
     .nav-links {
@@ -274,43 +290,6 @@
       grid-template-columns: minmax(0, 1.05fr) minmax(420px, 0.95fr);
       gap: clamp(46px, 7vw, 118px);
       align-items: center;
-    }
-
-    .eyebrow {
-      width: fit-content;
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
-      padding: 8px 13px;
-      border-radius: var(--radius-pill);
-      color: var(--silver-light);
-      background: rgba(255,255,255,0.045);
-      border: 1px solid rgba(255,255,255,0.09);
-      font-size: 0.74rem;
-      font-weight: 500;
-      letter-spacing: 0.055em;
-      margin-bottom: 26px;
-    }
-
-    .pulse {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--silver-light);
-      box-shadow: 0 0 14px rgba(255,255,255,0.72);
-      animation: pulse 2.4s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% {
-        opacity: 1;
-        transform: scale(1);
-      }
-
-      50% {
-        opacity: 0.45;
-        transform: scale(0.82);
-      }
     }
 
     .hero-title {
