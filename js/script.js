@@ -15,6 +15,15 @@ document.querySelectorAll(".reveal").forEach((element) => {
   observer.observe(element);
 });
 
+const isInstagramBrowser = /Instagram/i.test(navigator.userAgent);
+
+if (isInstagramBrowser) {
+  document.querySelectorAll('a[target="_blank"]').forEach((link) => {
+    link.removeAttribute("target");
+    link.removeAttribute("rel");
+  });
+}
+
 document.querySelectorAll('a[href^="#"]').forEach((link) => {
   link.addEventListener("click", (event) => {
     const target = document.querySelector(link.getAttribute("href"));
