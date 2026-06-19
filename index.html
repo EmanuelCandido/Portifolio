@@ -8,6 +8,11 @@
   <link rel="icon" type="image/png" href="assets/images/user.png?v=20260618">
   <link rel="shortcut icon" type="image/png" href="assets/images/user.png?v=20260618">
   <link rel="apple-touch-icon" href="assets/images/user.png?v=20260618">
+  <script>
+    if (window.location.search) {
+      window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+    }
+  </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -409,6 +414,6 @@
       </div>
     </div>
   </footer>
-  <script src="js/script.js"></script>
+  <script src="js/script.js?v=20260618"></script>
 </body>
 </html>

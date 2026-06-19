@@ -1,7 +1,3 @@
-if (window.location.search) {
-  window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
-}
-
 document.getElementById("year").textContent = new Date().getFullYear();
 
 const observer = new IntersectionObserver((entries) => {
