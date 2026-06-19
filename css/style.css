@@ -212,29 +212,13 @@
     .brand {
       display: flex;
       align-items: center;
-      gap: 8px;
       font-weight: 700;
       font-size: 0.95rem;
       letter-spacing: -0.035em;
     }
 
     .brand .silver-text {
-      margin-left: -2px;
-    }
-
-    .brand-mark {
-      width: 32px;
-      height: 32px;
-      border-radius: 12px;
-      display: grid;
-      place-items: center;
-      background:
-        linear-gradient(145deg, rgba(255,255,255,0.16), rgba(255,255,255,0.04));
-      border: 1px solid rgba(255,255,255,0.13);
-      color: var(--silver-light);
-      font-size: 0.72rem;
-      font-weight: 900;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.16);
+      margin-left: 1px;
     }
 
     .nav-links {
@@ -400,47 +384,29 @@
 
     .hero-card {
       border-radius: 30px;
-      padding: 30px;
+      padding: 32px;
       width: min(100%, 560px);
       justify-self: center;
-    }
-
-    .profile-avatar {
-      width: 76px;
-      height: 76px;
-      border-radius: 22px;
-      display: grid;
-      place-items: center;
-      margin-bottom: 22px;
-      background:
-        linear-gradient(145deg, rgba(255,255,255,0.14), rgba(255,255,255,0.035));
-      border: 1px solid rgba(255,255,255,0.14);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.18),
-        0 16px 36px rgba(0,0,0,0.44);
-      font-size: 1.9rem;
-      font-weight: 900;
-      color: var(--silver-light);
     }
 
     .profile-name {
       font-size: 1.35rem;
       font-weight: 700;
       letter-spacing: -0.04em;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
 
     .profile-role {
       color: var(--silver);
       font-size: 0.88rem;
-      margin-bottom: 26px;
+      margin-bottom: 24px;
     }
 
     .stats-row {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 10px;
-      margin-bottom: 24px;
+      margin-bottom: 22px;
     }
 
     .stat {
@@ -469,7 +435,7 @@
       display: flex;
       flex-wrap: wrap;
       gap: 7px;
-      margin-bottom: 26px;
+      margin-bottom: 24px;
     }
 
     .tag {
