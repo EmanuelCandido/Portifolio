@@ -222,6 +222,11 @@
       margin-left: 1px;
     }
 
+    .brand-name {
+      display: inline-flex;
+      align-items: baseline;
+    }
+
     .brand-mark {
       width: 32px;
       height: 32px;
