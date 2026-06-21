@@ -44,24 +44,14 @@ document.getElementById("contactForm").addEventListener("submit", (event) => {
   const name = document.getElementById("name").value.trim();
   const email = document.getElementById("email").value.trim();
   const message = document.getElementById("message").value.trim();
-  const destinationEmail = "emanoelcandidolima@gmail.com";
-  const subjectText = "Contato pelo portfólio";
-  const bodyText = `Nome: ${name}\nEmail: ${email}\n\nMensagem:\n${message}`;
+  const whatsappNumber = "558999998573";
+  const whatsappText = encodeURIComponent(
+    `Olá, Emanuel! Vim pelo seu portfólio.\n\nNome: ${name}\nEmail: ${email}\n\nMensagem:\n${message}`
+  );
+  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappText}`;
+  const whatsappWindow = window.open(whatsappUrl, "_blank", "noopener,noreferrer");
 
-  const subject = encodeURIComponent(subjectText);
-  const body = encodeURIComponent(bodyText);
-  const mailtoUrl = `mailto:${destinationEmail}?subject=${subject}&body=${body}`;
-  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${destinationEmail}&su=${subject}&body=${body}`;
-  const isMobile = /Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
-
-  if (isMobile) {
-    window.location.href = mailtoUrl;
-    return;
-  }
-
-  const emailWindow = window.open(gmailUrl, "_blank", "noopener,noreferrer");
-
-  if (!emailWindow) {
-    window.location.href = mailtoUrl;
+  if (!whatsappWindow) {
+    window.location.href = whatsappUrl;
   }
 });
