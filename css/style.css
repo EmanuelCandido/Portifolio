@@ -849,6 +849,8 @@
     .contact-icon img {
       width: 18px;
       height: 18px;
+      max-width: 18px;
+      max-height: 18px;
       display: block;
       object-fit: contain;
     }
