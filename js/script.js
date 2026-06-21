@@ -44,7 +44,7 @@ document.getElementById("contactForm").addEventListener("submit", (event) => {
   const name = document.getElementById("name").value.trim();
   const email = document.getElementById("email").value.trim();
   const message = document.getElementById("message").value.trim();
-  const whatsappNumber = "558999998573";
+  const whatsappNumber = "558999928573";
   const whatsappText = encodeURIComponent(
     `Olá, Emanuel! Vim pelo seu portfólio.\n\nNome: ${name}\nEmail: ${email}\n\nMensagem:\n${message}`
   );
