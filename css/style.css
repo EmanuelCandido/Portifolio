@@ -846,6 +846,13 @@
       flex-shrink: 0;
     }
 
+    .contact-icon img {
+      width: 18px;
+      height: 18px;
+      display: block;
+      object-fit: contain;
+    }
+
     .contact-link small {
       display: block;
       color: var(--silver-muted);
