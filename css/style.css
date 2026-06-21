@@ -164,6 +164,10 @@
       -webkit-backdrop-filter: blur(28px) saturate(140%);
       position: relative;
       overflow: hidden;
+      isolation: isolate;
+      contain: paint;
+      transform: translateZ(0);
+      backface-visibility: hidden;
     }
 
     .glass::before {
@@ -193,6 +197,16 @@
       -webkit-backdrop-filter: blur(42px) saturate(160%);
       position: relative;
       overflow: hidden;
+      isolation: isolate;
+      contain: paint;
+      transform: translateZ(0);
+      backface-visibility: hidden;
+    }
+
+    .theme-switching .glass,
+    .theme-switching .glass-strong {
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
     }
 
     .silver-text {

@@ -34,7 +34,12 @@ const storeTheme = (theme) => {
 };
 
 const setTheme = (theme, shouldStore = false) => {
+  document.documentElement.classList.add("theme-switching");
   document.documentElement.dataset.theme = theme;
+  void document.body.offsetHeight;
+  window.setTimeout(() => {
+    document.documentElement.classList.remove("theme-switching");
+  }, 80);
 
   if (themeToggle) {
     const nextTheme = theme === "light" ? "dark" : "light";
