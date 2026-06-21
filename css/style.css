@@ -1,9 +1,4 @@
-/* 
-      PALETA 60:30:10
-      60% Preto  → fundo, blocos principais e profundidade
-      30% Branco → textos, contraste e superfícies glass
-      10% Prata  → bordas, detalhes, brilho e acabamento premium
-    */
+
 
     :root {
       --black: #070707;
