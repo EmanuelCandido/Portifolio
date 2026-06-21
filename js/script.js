@@ -15,6 +15,53 @@ document.querySelectorAll(".reveal").forEach((element) => {
   observer.observe(element);
 });
 
+const themeToggle = document.querySelector(".theme-toggle");
+const themeQuery = window.matchMedia("(prefers-color-scheme: light)");
+const getStoredTheme = () => {
+  try {
+    return localStorage.getItem("portfolio-theme");
+  } catch {
+    return null;
+  }
+};
+
+const storeTheme = (theme) => {
+  try {
+    localStorage.setItem("portfolio-theme", theme);
+  } catch {
+    // Theme still changes for the current visit when storage is unavailable.
+  }
+};
+
+const setTheme = (theme, shouldStore = false) => {
+  document.documentElement.dataset.theme = theme;
+
+  if (themeToggle) {
+    const nextTheme = theme === "light" ? "dark" : "light";
+    const label = `Ativar tema ${nextTheme === "light" ? "claro" : "escuro"}`;
+    themeToggle.setAttribute("aria-label", label);
+    themeToggle.setAttribute("title", label);
+    themeToggle.setAttribute("aria-pressed", theme === "light" ? "true" : "false");
+  }
+
+  if (shouldStore) {
+    storeTheme(theme);
+  }
+};
+
+setTheme(document.documentElement.dataset.theme || (themeQuery.matches ? "light" : "dark"));
+
+themeToggle?.addEventListener("click", () => {
+  const currentTheme = document.documentElement.dataset.theme === "light" ? "light" : "dark";
+  setTheme(currentTheme === "light" ? "dark" : "light", true);
+});
+
+themeQuery.addEventListener("change", (event) => {
+  if (!getStoredTheme()) {
+    setTheme(event.matches ? "light" : "dark");
+  }
+});
+
 const isInstagramBrowser = /Instagram/i.test(navigator.userAgent);
 
 if (isInstagramBrowser) {
