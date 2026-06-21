@@ -1200,6 +1200,10 @@
       box-shadow: none;
     }
 
+    :root[data-theme="light"] .about-code-block .muted-code {
+      color: rgba(247,247,244,0.62);
+    }
+
     :root[data-theme="light"] .field input:focus,
     :root[data-theme="light"] .field textarea:focus {
       background:
