@@ -63,12 +63,48 @@
 
     html {
       scroll-behavior: smooth;
+      scrollbar-width: thin;
+      scrollbar-color: var(--silver-muted) transparent;
+      background:
+        radial-gradient(circle at 18% 12%, rgba(255,255,255,0.08), transparent 30%),
+        radial-gradient(circle at 88% 22%, rgba(184,184,178,0.08), transparent 28%),
+        radial-gradient(circle at 55% 95%, rgba(255,255,255,0.045), transparent 30%),
+        linear-gradient(135deg, #050505 0%, #0d0d0d 45%, #151515 100%);
+      background-attachment: fixed;
+    }
+
+    ::-webkit-scrollbar {
+      width: 11px;
+      height: 11px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      min-height: 44px;
+      border: 3px solid transparent;
+      border-radius: var(--radius-pill);
+      background: linear-gradient(
+        180deg,
+        var(--silver-light),
+        var(--silver-muted)
+      ) padding-box;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--silver-light);
+    }
+
+    ::-webkit-scrollbar-corner {
+      background: transparent;
     }
 
     body {
       min-height: 100vh;
       font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--black);
+      background: transparent;
       color: var(--white);
       line-height: 1.6;
       overflow-x: hidden;
@@ -83,11 +119,7 @@
       position: fixed;
       inset: 0;
       z-index: -3;
-      background:
-        radial-gradient(circle at 18% 12%, rgba(255,255,255,0.08), transparent 30%),
-        radial-gradient(circle at 88% 22%, rgba(184,184,178,0.08), transparent 28%),
-        radial-gradient(circle at 55% 95%, rgba(255,255,255,0.045), transparent 30%),
-        linear-gradient(135deg, #050505 0%, #0d0d0d 45%, #151515 100%);
+      background: transparent;
     }
 
     body::after {
@@ -1059,7 +1091,7 @@
     .delay-2 { transition-delay: 0.16s; }
     .delay-3 { transition-delay: 0.24s; }
 
-    :root[data-theme="light"] body::before {
+    :root[data-theme="light"] {
       background:
         radial-gradient(circle at 18% 12%, rgba(255,255,255,0.96), transparent 32%),
         radial-gradient(circle at 85% 18%, rgba(194,205,200,0.38), transparent 30%),
