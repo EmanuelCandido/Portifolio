@@ -1007,7 +1007,7 @@
     }
 
     .form-status.success {
-      color: #7ee2a8;
+      color: var(--silver-light);
     }
 
     .form-status.error {
