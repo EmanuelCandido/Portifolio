@@ -90,20 +90,44 @@ document.querySelectorAll('a[href^="#"]').forEach((link) => {
   });
 });
 
-document.getElementById("contactForm").addEventListener("submit", (event) => {
+document.getElementById("contactForm").addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  const name = document.getElementById("name").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const message = document.getElementById("message").value.trim();
-  const whatsappNumber = "558999928573";
-  const whatsappText = encodeURIComponent(
-    `Olá, Emanuel! Vim pelo seu portfólio.\n\nNome: ${name}\nEmail: ${email}\n\nMensagem:\n${message}`
-  );
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappText}`;
-  const whatsappWindow = window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+  const form = event.currentTarget;
+  const submitButton = document.getElementById("contactSubmit");
+  const formStatus = document.getElementById("formStatus");
+  const formData = new FormData(form);
+  const originalButtonText = submitButton.textContent;
 
-  if (!whatsappWindow) {
-    window.location.href = whatsappUrl;
+  submitButton.disabled = true;
+  submitButton.textContent = "Enviando...";
+  formStatus.className = "form-status";
+  formStatus.textContent = "";
+
+  try {
+    const response = await fetch(
+      "https://formsubmit.co/ajax/emanoelcandidolima@gmail.com",
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json"
+        },
+        body: formData
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Não foi possível enviar a mensagem.");
+    }
+
+    form.reset();
+    formStatus.classList.add("success");
+    formStatus.textContent = "Mensagem enviada com sucesso!";
+  } catch (error) {
+    formStatus.classList.add("error");
+    formStatus.textContent = "Não foi possível enviar. Verifique sua conexão e tente novamente.";
+  } finally {
+    submitButton.disabled = false;
+    submitButton.textContent = originalButtonText;
   }
 });

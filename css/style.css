@@ -994,6 +994,26 @@
       color: rgba(255,255,255,0.28);
     }
 
+    .form-card button:disabled {
+      cursor: wait;
+      opacity: 0.65;
+    }
+
+    .form-status {
+      min-height: 20px;
+      margin-top: 12px;
+      text-align: center;
+      font-size: 0.8rem;
+    }
+
+    .form-status.success {
+      color: #7ee2a8;
+    }
+
+    .form-status.error {
+      color: #ff9696;
+    }
+
     footer {
       border-top: 1px solid rgba(255,255,255,0.065);
       padding: 34px 0;
