@@ -34,12 +34,18 @@ const storeTheme = (theme) => {
 };
 
 const setTheme = (theme, shouldStore = false) => {
-  document.documentElement.classList.add("theme-switching");
-  document.documentElement.dataset.theme = theme;
-  void document.body.offsetHeight;
-  window.setTimeout(() => {
-    document.documentElement.classList.remove("theme-switching");
-  }, 80);
+  const themeChanged = document.documentElement.dataset.theme !== theme;
+
+  if (themeChanged) {
+    document.documentElement.classList.add("theme-switching");
+    document.documentElement.dataset.theme = theme;
+
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        document.documentElement.classList.remove("theme-switching");
+      });
+    });
+  }
 
   if (themeToggle) {
     const nextTheme = theme === "light" ? "dark" : "light";
@@ -75,20 +81,6 @@ if (isInstagramBrowser) {
     link.removeAttribute("rel");
   });
 }
-
-document.querySelectorAll('a[href^="#"]').forEach((link) => {
-  link.addEventListener("click", (event) => {
-    const target = document.querySelector(link.getAttribute("href"));
-
-    if (target) {
-      event.preventDefault();
-      target.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      });
-    }
-  });
-});
 
 document.getElementById("contactForm").addEventListener("submit", async (event) => {
   event.preventDefault();
