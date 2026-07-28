@@ -3,37 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Portfólio profissional de Emanuel Cândido, estudante de Engenharia de Software com foco em backend, APIs REST, banco de dados e experiências web responsivas." />
 
   <title>Emanuel Cândido — Engenheiro de Software</title>
   <link rel="icon" type="image/svg+xml" href="assets/icons/user.svg?v=20260621-3">
-  <link rel="shortcut icon" type="image/svg+xml" href="assets/icons/user.svg?v=20260621-3">
   <link rel="apple-touch-icon" href="assets/icons/user.svg?v=20260621-3">
-  <script>
-    (() => {
-      try {
-        const savedTheme = localStorage.getItem("portfolio-theme");
-        const systemTheme = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
-        document.documentElement.dataset.theme = savedTheme || systemTheme;
-      } catch {
-        document.documentElement.dataset.theme = "dark";
-      }
-    })();
-
-    if (window.location.search) {
-      window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
-    }
-  </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20260721-performance-mobile">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Manrope:wght@400;500;600;700&amp;family=Roboto+Condensed:wght@400&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=20260728-professional-portfolio">
 </head>
 
 <body>
-  <div class="orb one"></div>
-  <div class="orb two"></div>
-
   <nav class="nav">
     <div class="nav-inner">
       <a href="#inicio" class="brand">
@@ -53,9 +35,6 @@
           <svg aria-hidden="true" focusable="false"><use href="assets/icons/lucide-sprite.svg#menu"></use></svg>
         </button>
 
-        <button class="theme-toggle" type="button" aria-label="Alternar tema" title="Alternar tema">
-          <img src="assets/icons/brightness.svg?v=20260621-theme14" width="18" height="18" alt="" aria-hidden="true">
-        </button>
       </div>
     </div>
   </nav>
@@ -71,9 +50,9 @@
       </button>
     </div>
     <div class="mobile-menu-links">
-      <a href="#skills" data-menu-link><span>01</span>Habilidades<svg aria-hidden="true" focusable="false"><use href="assets/icons/lucide-sprite.svg#arrow-right"></use></svg></a>
-      <a href="#projetos" data-menu-link><span>02</span>Projetos<svg aria-hidden="true" focusable="false"><use href="assets/icons/lucide-sprite.svg#arrow-right"></use></svg></a>
-      <a href="#sobre" data-menu-link><span>03</span>Sobre<svg aria-hidden="true" focusable="false"><use href="assets/icons/lucide-sprite.svg#arrow-right"></use></svg></a>
+      <a href="#skills">Habilidades<svg aria-hidden="true" focusable="false"><use href="assets/icons/lucide-sprite.svg#arrow-right"></use></svg></a>
+      <a href="#projetos">Projetos<svg aria-hidden="true" focusable="false"><use href="assets/icons/lucide-sprite.svg#arrow-right"></use></svg></a>
+      <a href="#sobre">Sobre<svg aria-hidden="true" focusable="false"><use href="assets/icons/lucide-sprite.svg#arrow-right"></use></svg></a>
     </div>
   </aside>
 
@@ -82,43 +61,35 @@
       <div class="container">
         <div class="hero-grid">
           <div>
+            <div class="hero-kicker">Software engineer <i></i></div>
             <h1 class="hero-title">
               Engenheiro de Software criando sistemas
-              <span class="accent-text" data-text="limpos">limpos</span> e <span class="accent-text" data-text="escaláveis">escaláveis</span>.
+              <span class="accent-text">limpos</span> e <span class="accent-text">escaláveis</span>.
             </h1>
 
-            <p class="hero-description">
+            <p class="hero-description hero-support-copy">
               Desenvolvo APIs, sistemas web e soluções digitais com foco em arquitetura,
               segurança, performance e experiência de uso profissional.
             </p>
 
-            <div class="actions">
-              <a href="#projetos" class="btn btn-primary">Ver projetos →</a>
+            <div class="actions hero-support-actions">
+              <a href="#projetos" class="btn btn-primary">Ver projetos <svg aria-hidden="true" focusable="false"><use href="assets/icons/lucide-sprite.svg#arrow-right"></use></svg></a>
               <a href="#contato" class="btn btn-secondary">Falar comigo</a>
             </div>
           </div>
 
-          <aside class="hero-card glass-strong reveal delay-1">
-            <div class="profile-name">Emanuel Cândido</div>
-            <div class="profile-role">Engenharia de Software · Teresina/PI · Brasil</div>
-
-            <div class="stats-row">
-              <div class="stat">
-                <strong>1+</strong>
-                <span>anos de estudo</span>
-              </div>
-
-              <div class="stat">
-                <strong>10+</strong>
-                <span>projetos</span>
-              </div>
-
-              <div class="stat">
-                <strong>100%</strong>
-                <span>em evolução</span>
+          <aside class="hero-card glass hero-enter-card">
+            <div class="machine-profile">
+              <a class="profile-photo-link" href="assets/images/profile-emanuel.jpg" target="_blank" rel="noopener noreferrer" aria-label="Ver foto de Emanuel Cândido inteira" data-profile-photo>
+                <img class="profile-avatar" src="assets/images/profile-emanuel.jpg" alt="Foto de Emanuel Cândido" width="1080" height="1642">
+              </a>
+              <div>
+                <div class="profile-name">Emanuel Cândido</div>
+                <div class="profile-role">Engenharia de Software · Teresina/PI · Brasil</div>
               </div>
             </div>
 
+            <div class="machine-label">Tecnologias</div>
             <div class="tag-row">
               <span class="tag">Java</span>
               <span class="tag">Spring Boot</span>
@@ -158,7 +129,7 @@
         <div class="skills-grid">
           <article class="skill-card glass reveal">
             <div class="skill-icon" aria-hidden="true">
-              <svg aria-hidden="true" focusable="false"><use href="assets/icons/lucide-sprite.svg#server"></use></svg>
+              <img src="assets/icons/specialty-api.svg" width="24" height="24" alt="">
             </div>
             <h3>Backend & APIs</h3>
             <p>
@@ -174,7 +145,7 @@
 
           <article class="skill-card glass reveal delay-1">
             <div class="skill-icon" aria-hidden="true">
-              <svg aria-hidden="true" focusable="false"><use href="assets/icons/lucide-sprite.svg#database"></use></svg>
+              <img src="assets/icons/specialty-data.svg" width="24" height="24" alt="">
             </div>
             <h3>Banco de Dados</h3>
             <p>
@@ -190,7 +161,7 @@
 
           <article class="skill-card glass reveal delay-2">
             <div class="skill-icon" aria-hidden="true">
-              <svg aria-hidden="true" focusable="false"><use href="assets/icons/lucide-sprite.svg#monitor-smartphone"></use></svg>
+              <img src="assets/icons/specialty-interface.svg" width="24" height="24" alt="">
             </div>
             <h3>Frontend & Interface</h3>
             <p>
@@ -206,7 +177,7 @@
 
           <article class="skill-card glass reveal delay-3">
             <div class="skill-icon" aria-hidden="true">
-              <svg aria-hidden="true" focusable="false"><use href="assets/icons/lucide-sprite.svg#git-branch"></use></svg>
+              <img src="assets/icons/specialty-versioning.svg" width="24" height="24" alt="">
             </div>
             <h3>Versionamento</h3>
             <p>
@@ -231,90 +202,63 @@
           <div class="section-label">Portfólio</div>
           <h2 class="section-title">Projetos em destaque</h2>
           <p class="section-desc">
-            Exemplos de projetos que mostram domínio de lógica, estrutura,
-            banco de dados, APIs e construção de sistemas completos.
+            Projetos reais que combinam interfaces responsivas, aplicações móveis, Firebase e experiências completas.
           </p>
         </header>
 
         <div class="projects-grid">
           <article class="project-card glass reveal">
-            <figure class="project-media project-media--api" role="img" aria-label="Mockup preparado para receber a screenshot da API PIBIC">
-              <div class="mockup-toolbar" aria-hidden="true">
-                <span></span><span></span><span></span>
-              </div>
-              <div class="mockup-screen mockup-api" aria-hidden="true">
-                <div class="mockup-sidebar">
-                  <span></span><span></span><span></span><span></span>
-                </div>
-                <div class="mockup-api-content">
-                  <span class="mockup-heading"></span>
-                  <span class="mockup-endpoint"></span>
-                  <span class="mockup-endpoint"></span>
-                  <span class="mockup-endpoint"></span>
-                </div>
-              </div>
+            <figure class="project-media">
+              <img src="assets/images/project-barbershop.png" alt="Painel administrativo da Barbearia exibindo o catálogo de serviços" width="1920" height="868" loading="lazy" decoding="async">
             </figure>
 
             <div class="project-head">
-              <div class="project-number">01</div>
-              <a href="https://github.com/EmanuelCandido/API-PIBIC" class="project-link" target="_blank" rel="noopener noreferrer">↗</a>
+              <a href="https://github.com/EmanuelCandido/Sistema-de-barbeiro" class="project-link" target="_blank" rel="noopener noreferrer" aria-label="Abrir Sistema de Barbeiro no GitHub"><svg aria-hidden="true" focusable="false"><use href="assets/icons/lucide-sprite.svg#arrow-up-right"></use></svg></a>
             </div>
 
-            <h3>API PIBIC</h3>
+            <h3>Sistema de Barbeiro</h3>
             <p>
-              API desenvolvida para apoiar o projeto PIBIC, com cadastro,
-              organização de dados, regras de negócio e integração com banco de dados.
+              Sistema de agendamento para barbearias, com experiência mobile para
+              clientes, painel administrativo e integração com Firebase.
             </p>
 
             <div class="project-bottom">
               <div class="pill-row">
-                <span class="pill">Java</span>
-                <span class="pill">Spring</span>
-                <span class="pill">PostgreSQL</span>
-              </div>
-              <span class="metric">Backend</span>
-            </div>
-          </article>
-
-          <article class="project-card glass reveal delay-1">
-            <figure class="project-media project-media--discipline" role="img" aria-label="Mockup preparado para receber a screenshot do Ideathon Displine">
-              <div class="mockup-toolbar" aria-hidden="true">
-                <span></span><span></span><span></span>
-              </div>
-              <div class="mockup-screen mockup-dashboard" aria-hidden="true">
-                <div class="mockup-dashboard-head">
-                  <span></span><span></span>
-                </div>
-                <div class="mockup-dashboard-grid">
-                  <span></span><span></span><span></span>
-                </div>
-                <div class="mockup-progress"><span></span></div>
-              </div>
-            </figure>
-
-            <div class="project-head">
-              <div class="project-number">02</div>
-              <a href="https://github.com/EmanuelCandido/Ideathon-Displine" class="project-link" target="_blank" rel="noopener noreferrer">↗</a>
-            </div>
-
-            <h3>Ideathon Displine</h3>
-            <p>
-              Solução criada para o Ideathon, com proposta digital voltada para
-              organização, disciplina e experiência acadêmica.
-            </p>
-
-            <div class="project-bottom">
-              <div class="pill-row">
-                <span class="pill">SQL</span>
-                <span class="pill">Java</span>
-                <span class="pill">API</span>
+                <span class="pill">React</span>
+                <span class="pill">TypeScript</span>
+                <span class="pill">Firebase</span>
               </div>
               <span class="metric">Full Stack</span>
             </div>
           </article>
 
+          <article class="project-card glass reveal delay-1">
+            <figure class="project-media">
+              <img src="assets/images/project-nosso-cantinho.png" alt="Apresentação do aplicativo Nosso Cantinho com logotipo e descrição do projeto" width="1122" height="607" loading="lazy" decoding="async">
+            </figure>
+
+            <div class="project-head">
+              <a href="https://github.com/EmanuelCandido/nosso-cantinho-android" class="project-link" target="_blank" rel="noopener noreferrer" aria-label="Abrir Nosso Cantinho no GitHub"><svg aria-hidden="true" focusable="false"><use href="assets/icons/lucide-sprite.svg#arrow-up-right"></use></svg></a>
+            </div>
+
+            <h3>Nosso Cantinho</h3>
+            <p>
+              Aplicativo Android nativo para finanças compartilhadas e chat privado,
+              desenvolvido com Material 3, MVVM e Firebase.
+            </p>
+
+            <div class="project-bottom">
+              <div class="pill-row">
+                <span class="pill">Java</span>
+                <span class="pill">Android</span>
+                <span class="pill">Firebase</span>
+              </div>
+              <span class="metric">Mobile</span>
+            </div>
+          </article>
+
           <article class="project-card glass reveal delay-2">
-            <figure class="project-media project-media--portfolio" role="img" aria-label="Mockup preparado para receber a screenshot do Portfólio Profissional">
+            <figure class="project-media" role="img" aria-label="Mockup do Portfólio Profissional">
               <div class="mockup-toolbar" aria-hidden="true">
                 <span></span><span></span><span></span>
               </div>
@@ -330,8 +274,7 @@
             </figure>
 
             <div class="project-head">
-              <div class="project-number">03</div>
-              <a href="https://github.com/EmanuelCandido/Portifolio" class="project-link" target="_blank" rel="noopener noreferrer">↗</a>
+              <a href="https://github.com/EmanuelCandido/Portifolio" class="project-link" target="_blank" rel="noopener noreferrer" aria-label="Abrir Portfólio Profissional no GitHub"><svg aria-hidden="true" focusable="false"><use href="assets/icons/lucide-sprite.svg#arrow-up-right"></use></svg></a>
             </div>
 
             <h3>Portfólio Profissional</h3>
@@ -361,26 +304,29 @@
           <div class="about-text reveal">
             <div class="section-label">Sobre mim</div>
             <h2 class="section-title">
-              Código bem organizado, visual profissional e evolução constante.
+              Engenharia com clareza, consistência e foco no produto.
             </h2>
 
             <p>
               Sou estudante de Engenharia de Software e desenvolvedor em formação,
-              com foco em criar sistemas úteis, organizados e bem estruturados.
+              dedicado a transformar necessidades reais em aplicações confiáveis,
+              organizadas e fáceis de evoluir.
             </p>
 
             <p>
-              Tenho interesse principalmente em backend, APIs, banco de dados,
-              autenticação, regras de negócio e integração com interfaces modernas.
+              Minha atuação está concentrada em backend com Java e Spring Boot,
+              APIs REST, banco de dados, autenticação, regras de negócio e integração
+              com interfaces modernas.
             </p>
 
             <p>
-              Busco evoluir criando projetos reais, entendendo boas práticas e
-              transformando ideias em soluções digitais com aparência profissional.
+              Este portfólio reúne projetos que demonstram minha evolução técnica,
+              atenção à experiência do usuário e compromisso com código limpo,
+              documentação objetiva e soluções com propósito.
             </p>
           </div>
 
-          <aside class="about-card about-code-showcase glass-strong reveal delay-1">
+          <aside class="about-card about-code-showcase glass reveal delay-1">
             <div class="about-code-window">
               <div class="about-window-dots">
                 <span></span>
@@ -390,26 +336,29 @@
 
               <div class="about-code-block">
                 <div><span class="muted-code">class</span> SoftwareEngineer {</div>
-                <div class="indent-1">stack = ["Java", "Spring", "SQL"];</div>
-                <div class="indent-1">focus = "Clean Code";</div>
+                <div class="indent-1">stack = ["Java", "Spring Boot", "SQL"];</div>
+                <div class="indent-1">focus = "Produto e qualidade";</div>
                 <div class="indent-1">build() {</div>
-                <div class="indent-2"><span class="muted-code">return</span> "Soluções reais";</div>
+                <div class="indent-2"><span class="muted-code">return</span> "Soluções confiáveis";</div>
                 <div class="indent-1">}</div>
                 <div>}</div>
               </div>
 
               <div class="about-mini-metrics">
                 <div class="about-mini-card">
+                  <img src="assets/icons/specialty-api.svg" width="24" height="24" alt="" aria-hidden="true">
                   <strong>API</strong>
                   <span>Back-end estruturado</span>
                 </div>
 
                 <div class="about-mini-card">
+                  <img src="assets/icons/about-ux.svg" width="24" height="24" alt="" aria-hidden="true">
                   <strong>UX</strong>
                   <span>Interfaces limpas</span>
                 </div>
 
                 <div class="about-mini-card">
+                  <img src="assets/icons/about-sql.svg" width="24" height="24" alt="" aria-hidden="true">
                   <strong>SQL</strong>
                   <span>Dados organizados</span>
                 </div>
@@ -424,52 +373,54 @@
 
     <section id="contato">
       <div class="container">
-        <header class="section-header reveal">
-          <div class="section-label">Contato</div>
-          <h2 class="section-title">Vamos conversar?</h2>
-          <p class="section-desc">
-            Estou aberto a projetos, oportunidades, parcerias e conversas sobre desenvolvimento.
-          </p>
-        </header>
-
         <div class="contact-grid">
-          <div class="contact-card glass-strong reveal">
-            <p>
-              Me envie uma mensagem com a ideia do projeto, oportunidade ou proposta.
-              Prefiro uma comunicação direta, simples e objetiva.
-            </p>
+          <div class="contact-intro">
+            <header class="section-header reveal">
+              <div class="section-label">Contato</div>
+              <h2 class="section-title">Vamos conversar?</h2>
+              <p class="section-desc">
+                Estou aberto a projetos, oportunidades, parcerias e conversas sobre desenvolvimento.
+              </p>
+            </header>
 
-            <div class="contact-links">
-              <a
-                href="mailto:emanoelcandidolima@gmail.com?subject=Contato%20pelo%20portf%C3%B3lio&amp;body=Ol%C3%A1%20Emanuel%2C%0D%0A%0D%0A"
-                class="contact-link"
-              >
-                <span class="contact-icon">✉</span>
-                <span>
-                  <small>Email</small>
-                  <strong>emanoelcandidolima@gmail.com</strong>
-                </span>
-              </a>
+            <div class="contact-card glass reveal">
+              <p>
+                Me envie uma mensagem com a ideia do projeto, oportunidade ou proposta.
+                Prefiro uma comunicação direta, simples e objetiva.
+              </p>
 
-              <a href="https://www.linkedin.com/in/emanuecandido" class="contact-link" target="_blank" rel="noopener noreferrer">
-                <span class="contact-icon">
-                  <img src="assets/icons/linkedin.svg" width="18" height="18" alt="" aria-hidden="true">
-                </span>
-                <span>
-                  <small>LinkedIn</small>
-                  <strong>emanuecandido</strong>
-                </span>
-              </a>
+              <div class="contact-links">
+                <a
+                  href="mailto:emanoelcandidolima@gmail.com?subject=Contato%20pelo%20portf%C3%B3lio&amp;body=Ol%C3%A1%20Emanuel%2C%0D%0A%0D%0A"
+                  class="contact-link"
+                >
+                  <span class="contact-icon"><svg aria-hidden="true" focusable="false"><use href="assets/icons/lucide-sprite.svg#mail"></use></svg></span>
+                  <span>
+                    <small>Email</small>
+                    <strong>emanoelcandidolima@gmail.com</strong>
+                  </span>
+                </a>
 
-              <a href="https://www.instagram.com/_emanuel_1/" class="contact-link" target="_blank" rel="noopener noreferrer">
-                <span class="contact-icon">
-                  <img src="assets/icons/instagram.svg" width="18" height="18" alt="" aria-hidden="true">
-                </span>
-                <span>
-                  <small>Instagram</small>
-                  <strong>@_emanuel_1</strong>
-                </span>
-              </a>
+                <a href="https://www.linkedin.com/in/emanuecandido" class="contact-link" target="_blank" rel="noopener noreferrer">
+                  <span class="contact-icon">
+                    <img src="assets/icons/linkedin.svg" width="18" height="18" alt="" aria-hidden="true">
+                  </span>
+                  <span>
+                    <small>LinkedIn</small>
+                    <strong>emanuecandido</strong>
+                  </span>
+                </a>
+
+                <a href="https://www.instagram.com/_emanuel_1/" class="contact-link" target="_blank" rel="noopener noreferrer">
+                  <span class="contact-icon">
+                    <img src="assets/icons/instagram.svg" width="18" height="18" alt="" aria-hidden="true">
+                  </span>
+                  <span>
+                    <small>Instagram</small>
+                    <strong>@_emanuel_1</strong>
+                  </span>
+                </a>
+              </div>
             </div>
           </div>
 
@@ -491,7 +442,7 @@
               <input id="email" name="email" type="email" placeholder="seu@email.com" required>
             </div>
 
-            <div class="field">
+            <div class="field field-message">
               <label for="message">Mensagem</label>
               <textarea id="message" name="message" rows="5" placeholder="Descreva o projeto ou oportunidade..." required></textarea>
             </div>
@@ -500,7 +451,7 @@
             <input type="hidden" name="_template" value="table">
 
             <button class="btn btn-primary btn-full" id="contactSubmit" type="submit">
-              Enviar por email →
+              Enviar por email <img src="assets/icons/send.svg" width="24" height="24" alt="" aria-hidden="true">
             </button>
             <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
           </form>
@@ -508,6 +459,13 @@
       </div>
     </section>
   </main>
+
+  <div class="photo-lightbox" id="profilePhotoLightbox" role="dialog" aria-modal="true" aria-label="Foto de Emanuel Cândido em tamanho completo" aria-hidden="true" inert>
+    <button class="photo-lightbox-close" type="button" aria-label="Fechar foto">
+      <svg aria-hidden="true" focusable="false"><use href="assets/icons/lucide-sprite.svg#x"></use></svg>
+    </button>
+    <img src="assets/images/profile-emanuel.jpg" alt="Emanuel Cândido em uma fotografia de corpo inteiro" width="1080" height="1642">
+  </div>
 
   <footer>
     <div class="container footer-inner">
@@ -520,6 +478,6 @@
       </div>
     </div>
   </footer>
-  <script src="js/script.js?v=20260721-local-icons"></script>
+  <script src="js/script.js?v=20260728-professional-portfolio"></script>
 </body>
 </html>

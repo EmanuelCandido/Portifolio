@@ -1,59 +1,92 @@
-# Portfólio
+# Portfólio — Emanuel Cândido
 
-Este é o meu portfólio profissional, desenvolvido para apresentar minha trajetória, minhas habilidades e meus projetos na área de Engenharia de Software.
+Portfólio profissional desenvolvido para apresentar minha trajetória em Engenharia de Software, minhas competências técnicas e projetos que transformam necessidades reais em soluções digitais.
 
-O projeto foi organizado com HTML, CSS e JavaScript puro para facilitar manutenção, ajustes visuais e futuras atualizações de conteúdo, imagens e ícones.
+O projeto combina uma identidade visual autoral com uma experiência responsiva e acessível. Toda a interface foi construída com HTML, CSS e JavaScript puros, mantendo a base de código leve, organizada e simples de evoluir.
+
+## Destaques
+
+- Apresentação profissional, especialidades, projetos e canais de contato em uma única página.
+- Layout responsivo para desktop, tablet e dispositivos móveis.
+- Animação de digitação na apresentação principal.
+- Entrada progressiva dos conteúdos durante a navegação.
+- Cards com animação de carregamento, barra de progresso e porcentagem.
+- Galeria da foto de perfil com visualização ampliada e navegação por teclado.
+- Formulário de contato integrado ao cliente de e-mail do visitante.
+- Ícones SVG locais e imagens otimizadas, sem dependência de bibliotecas de interface.
+- Respeito à preferência de movimento reduzido configurada no sistema.
+
+## Tecnologias
+
+- HTML5 semântico
+- CSS3
+- JavaScript
+- Google Fonts
+- SVG
+- Git e GitHub
 
 ## Estrutura do projeto
 
 ```text
-portfolio/
-├── index.html
+Portifolio/
+├── assets/
+│   ├── icons/
+│   └── images/
 ├── css/
 │   └── style.css
 ├── js/
 │   └── script.js
-└── assets/
-    ├── images/
-    └── icons/
+├── index.html
+├── LICENSE
+└── README.md
 ```
 
-## Tecnologias utilizadas
+## Execução local
 
-- HTML5
-- CSS3
-- JavaScript
-- Google Fonts
-- Organização de assets por imagens e ícones
+O portfólio não exige instalação de dependências ou etapa de compilação.
 
-## Como eu executo localmente
+1. Clone o repositório:
 
-Para visualizar o portfólio, basta abrir o arquivo `index.html` no navegador.
+   ```bash
+   git clone https://github.com/EmanuelCandido/Portifolio.git
+   ```
 
-## Como eu atualizo imagens e ícones
+2. Entre na pasta do projeto:
 
-As imagens ficam em `assets/images/`.
+   ```bash
+   cd Portifolio
+   ```
 
-Os ícones ficam em `assets/icons/`.
+3. Abra o arquivo `index.html` em um navegador moderno.
 
-Quando eu quiser trocar algum arquivo visual, adiciono o novo arquivo na pasta correta e atualizo o caminho correspondente no `index.html`.
+Para trabalhar com recarregamento automático, também é possível servir a pasta com uma extensão como Live Server.
 
-Exemplo:
+## Personalização
 
-```html
-<img src="assets/images/minha-foto.png" alt="Foto de Emanuel Cândido">
-<img src="assets/icons/github.svg" alt="GitHub">
-```
+- `index.html`: conteúdo, links, estrutura e informações dos projetos.
+- `css/style.css`: identidade visual, layout, responsividade e animações.
+- `js/script.js`: interações, menu móvel, efeitos de entrada, formulário e visualização da foto.
+- `assets/images/`: foto de perfil e imagens dos projetos.
+- `assets/icons/`: ícones SVG utilizados na interface.
 
-## Onde eu personalizo cada parte
+Ao substituir uma imagem ou um ícone, preserve nomes descritivos, dimensões adequadas e textos alternativos relevantes.
 
-- `index.html`: textos, links, seções e estrutura da página.
-- `css/style.css`: cores, espaçamentos, responsividade e aparência visual.
-- `js/script.js`: animações, rolagem suave e funcionamento do formulário de contato.
-- `assets/images/`: imagens usadas no portfólio.
-- `assets/icons/`: ícones usados no portfólio.
+## Projetos apresentados
 
+- **Sistema de Barbeiro:** plataforma de agendamento com experiência para clientes, painel administrativo e Firebase.
+- **Nosso Cantinho:** aplicativo Android nativo para finanças compartilhadas e comunicação privada.
+- **Portfólio Profissional:** este projeto, criado para consolidar minha apresentação, competências e trabalhos em uma experiência web consistente.
+
+## Autor
+
+**Emanuel Cândido**
+
+Estudante de Engenharia de Software — Teresina, Piauí, Brasil.
+
+- [GitHub](https://github.com/EmanuelCandido)
+- [LinkedIn](https://www.linkedin.com/in/emanuecandido)
+- [Instagram](https://www.instagram.com/_emanuel_1)
 
 ## Licença
 
-A licença do projeto está definida no arquivo `LICENSE`.
+Este projeto é distribuído sob os termos definidos no arquivo [LICENSE](LICENSE).

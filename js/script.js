@@ -1,19 +1,303 @@
 document.getElementById("year").textContent = new Date().getFullYear();
 
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach((entry) => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add("visible");
-      observer.unobserve(entry.target);
-    }
+const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+const heroTitle = document.querySelector(".hero-title");
+const heroSection = document.querySelector(".hero");
+
+const startHeroTyping = () => {
+  if (!heroTitle || reducedMotionQuery.matches) {
+    return;
+  }
+
+  const accessibleTitle = heroTitle.textContent.replace(/\s+/g, " ").trim();
+  const textWalker = document.createTreeWalker(heroTitle, NodeFilter.SHOW_TEXT);
+  const textNodes = [];
+
+  while (textWalker.nextNode()) {
+    textNodes.push(textWalker.currentNode);
+  }
+
+  heroTitle.setAttribute("aria-label", accessibleTitle);
+  heroTitle.classList.add("is-typing");
+
+  textNodes.forEach((textNode) => {
+    const fragment = document.createDocumentFragment();
+
+    Array.from(textNode.textContent).forEach((character) => {
+      const characterElement = document.createElement("span");
+      characterElement.className = "typing-char";
+      characterElement.setAttribute("aria-hidden", "true");
+      characterElement.textContent = character;
+      fragment.appendChild(characterElement);
+    });
+
+    textNode.replaceWith(fragment);
   });
-}, {
-  threshold: 0.12
+
+  const characters = Array.from(heroTitle.querySelectorAll(".typing-char"));
+  const caret = document.createElement("span");
+  caret.className = "typing-caret";
+  caret.setAttribute("aria-hidden", "true");
+  caret.textContent = "|";
+
+  if (!characters.length) {
+    return;
+  }
+
+  characters[0].before(caret);
+
+  let characterIndex = 0;
+
+  const typeNextCharacter = () => {
+    const character = characters[characterIndex];
+
+    character.classList.add("is-typed");
+    character.after(caret);
+    characterIndex += 1;
+
+    if (characterIndex < characters.length) {
+      const typedCharacter = character.textContent;
+      const pause = /[.,]/.test(typedCharacter) ? 120 : typedCharacter === " " ? 22 : 36;
+      window.setTimeout(typeNextCharacter, pause);
+    } else {
+      heroTitle.classList.add("typing-complete");
+      heroSection?.classList.add("typing-finished");
+      window.setTimeout(() => caret.remove(), 360);
+    }
+  };
+
+  window.setTimeout(typeNextCharacter, 420);
+};
+
+startHeroTyping();
+
+const cardRevealSelector = [
+  ".skill-card",
+  ".project-card",
+  ".about-card",
+  ".contact-card",
+  ".form-card"
+].join(",");
+
+const CARD_LOAD_DURATION = 1550;
+const CARD_LOAD_COMPLETE_DELAY = 140;
+const CARD_LOADER_REMOVAL_DELAY = 500;
+
+const createCardLoader = (element) => {
+  const loader = document.createElement("div");
+  const percentage = document.createElement("span");
+  const track = document.createElement("span");
+  const fill = document.createElement("span");
+
+  loader.className = "card-upload-loader";
+  loader.setAttribute("aria-hidden", "true");
+  percentage.className = "card-upload-percentage";
+  percentage.textContent = "0%";
+  track.className = "card-upload-track";
+  fill.className = "card-upload-fill";
+
+  track.appendChild(fill);
+  loader.append(percentage, track);
+  element.appendChild(loader);
+};
+
+const getRevealDelay = (element) => {
+  const cssDelay = getComputedStyle(element).getPropertyValue("--reveal-delay").trim();
+  const delayValue = Number.parseFloat(cssDelay) || 0;
+  return cssDelay.endsWith("ms") ? delayValue : delayValue * 1000;
+};
+
+const startCardLoading = (element) => {
+  if (element.dataset.loadingStarted === "true") {
+    return;
+  }
+
+  element.dataset.loadingStarted = "true";
+  element.classList.add("visible");
+
+  const percentage = element.querySelector(".card-upload-percentage");
+
+  if (reducedMotionQuery.matches || !percentage) {
+    element.style.setProperty("--upload-progress", "1");
+    element.classList.add("load-complete");
+    element.querySelector(".card-upload-loader")?.remove();
+    return;
+  }
+
+  const delay = getRevealDelay(element);
+
+  window.setTimeout(() => {
+    const startedAt = performance.now();
+
+    const updateProgress = (timestamp) => {
+      const elapsed = Math.min((timestamp - startedAt) / CARD_LOAD_DURATION, 1);
+      const progress = elapsed < .5
+        ? 2 * elapsed * elapsed
+        : 1 - Math.pow(-2 * elapsed + 2, 2) / 2;
+
+      element.style.setProperty("--upload-progress", progress.toFixed(4));
+      percentage.textContent = `${Math.round(progress * 100)}%`;
+
+      if (elapsed < 1) {
+        window.requestAnimationFrame(updateProgress);
+      } else {
+        percentage.textContent = "100%";
+        window.setTimeout(() => {
+          element.classList.add("load-complete");
+          window.setTimeout(
+            () => element.querySelector(".card-upload-loader")?.remove(),
+            CARD_LOADER_REMOVAL_DELAY
+          );
+        }, CARD_LOAD_COMPLETE_DELAY);
+      }
+    };
+
+    window.requestAnimationFrame(updateProgress);
+  }, delay);
+};
+
+const prepareTypingReveal = (element) => {
+  if (element.dataset.typingPrepared === "true") {
+    return Array.from(element.querySelectorAll(".section-typing-char"));
+  }
+
+  const textTargets = element.matches(".about-text")
+    ? element.querySelectorAll(".section-label, .section-title, p")
+    : element.querySelectorAll(".section-label, .section-title, .section-desc");
+
+  const characters = [];
+
+  textTargets.forEach((target) => {
+    const text = target.textContent.replace(/\s+/g, " ").trim();
+
+    if (!text) {
+      return;
+    }
+
+    target.setAttribute("aria-label", text);
+    target.textContent = "";
+
+    const typingLine = document.createElement("span");
+
+    Array.from(text).forEach((character) => {
+      const characterElement = document.createElement("span");
+      characterElement.className = "section-typing-char";
+      characterElement.setAttribute("aria-hidden", "true");
+      characterElement.textContent = character;
+      typingLine.appendChild(characterElement);
+      characters.push(characterElement);
+    });
+
+    target.appendChild(typingLine);
+  });
+
+  element.dataset.typingPrepared = "true";
+  return characters;
+};
+
+const startTypingReveal = (element) => {
+  if (element.dataset.typingStarted === "true") {
+    return;
+  }
+
+  element.dataset.typingStarted = "true";
+
+  if (reducedMotionQuery.matches) {
+    return;
+  }
+
+  const characters = prepareTypingReveal(element);
+
+  if (!characters.length) {
+    return;
+  }
+
+  const caret = document.createElement("span");
+  caret.className = "typing-caret section-typing-caret";
+  caret.setAttribute("aria-hidden", "true");
+  caret.textContent = "|";
+  characters[0].before(caret);
+
+  const batchSize = Math.max(1, Math.ceil(characters.length / 170));
+  let characterIndex = 0;
+
+  const typeCharacterBatch = () => {
+    const batchEnd = Math.min(characterIndex + batchSize, characters.length);
+
+    while (characterIndex < batchEnd) {
+      characters[characterIndex].classList.add("is-typed");
+      characterIndex += 1;
+    }
+
+    characters[characterIndex - 1].after(caret);
+
+    if (characterIndex < characters.length) {
+      window.setTimeout(typeCharacterBatch, 14);
+    } else {
+      element.classList.add("typing-finished");
+      window.setTimeout(() => caret.remove(), 320);
+    }
+  };
+
+  window.setTimeout(typeCharacterBatch, 90);
+};
+
+const revealElements = Array.from(document.querySelectorAll(".reveal"));
+
+revealElements.forEach((element) => {
+  if (element.matches(cardRevealSelector)) {
+    element.classList.add("reveal-card");
+    createCardLoader(element);
+  } else {
+    element.classList.add("reveal-text");
+
+    if (!reducedMotionQuery.matches) {
+      prepareTypingReveal(element);
+    }
+  }
 });
 
-document.querySelectorAll(".reveal").forEach((element) => {
-  observer.observe(element);
-});
+const showRevealElement = (element) => {
+  if (element.classList.contains("reveal-text")) {
+    startTypingReveal(element);
+  } else {
+    startCardLoading(element);
+  }
+};
+
+if ("IntersectionObserver" in window) {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        showRevealElement(entry.target);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {
+    threshold: 0.01,
+    rootMargin: "0px 0px -4% 0px"
+  });
+
+  revealElements.forEach((element) => {
+    observer.observe(element);
+  });
+
+  window.setTimeout(() => {
+    revealElements.forEach((element) => {
+      const bounds = element.getBoundingClientRect();
+      const isInsideViewport = bounds.top < window.innerHeight && bounds.bottom > 0;
+
+      if (isInsideViewport) {
+        showRevealElement(element);
+        observer.unobserve(element);
+      }
+    });
+  }, 600);
+} else {
+  revealElements.forEach((element) => {
+    showRevealElement(element);
+  });
+}
 
 const navLinks = Array.from(document.querySelectorAll('.nav-links a[href^="#"]'));
 const mobileMenuLinks = Array.from(document.querySelectorAll('.mobile-menu-links a[href^="#"]'));
@@ -124,67 +408,9 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-window.matchMedia("(min-width: 721px)").addEventListener("change", (event) => {
+window.matchMedia("(min-width: 651px)").addEventListener("change", (event) => {
   if (event.matches && document.body.classList.contains("menu-open")) {
     setMobileMenu(false, false);
-  }
-});
-
-const themeToggle = document.querySelector(".theme-toggle");
-const themeQuery = window.matchMedia("(prefers-color-scheme: light)");
-const getStoredTheme = () => {
-  try {
-    return localStorage.getItem("portfolio-theme");
-  } catch {
-    return null;
-  }
-};
-
-const storeTheme = (theme) => {
-  try {
-    localStorage.setItem("portfolio-theme", theme);
-  } catch {
-    // Theme still changes for the current visit when storage is unavailable.
-  }
-};
-
-const setTheme = (theme, shouldStore = false) => {
-  const themeChanged = document.documentElement.dataset.theme !== theme;
-
-  if (themeChanged) {
-    document.documentElement.classList.add("theme-switching");
-    document.documentElement.dataset.theme = theme;
-
-    window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(() => {
-        document.documentElement.classList.remove("theme-switching");
-      });
-    });
-  }
-
-  if (themeToggle) {
-    const nextTheme = theme === "light" ? "dark" : "light";
-    const label = `Ativar tema ${nextTheme === "light" ? "claro" : "escuro"}`;
-    themeToggle.setAttribute("aria-label", label);
-    themeToggle.setAttribute("title", label);
-    themeToggle.setAttribute("aria-pressed", theme === "light" ? "true" : "false");
-  }
-
-  if (shouldStore) {
-    storeTheme(theme);
-  }
-};
-
-setTheme(document.documentElement.dataset.theme || (themeQuery.matches ? "light" : "dark"));
-
-themeToggle?.addEventListener("click", () => {
-  const currentTheme = document.documentElement.dataset.theme === "light" ? "light" : "dark";
-  setTheme(currentTheme === "light" ? "dark" : "light", true);
-});
-
-themeQuery.addEventListener("change", (event) => {
-  if (!getStoredTheme()) {
-    setTheme(event.matches ? "light" : "dark");
   }
 });
 
@@ -197,6 +423,54 @@ if (isInstagramBrowser) {
   });
 }
 
+const profilePhotoLink = document.querySelector("[data-profile-photo]");
+const profilePhotoLightbox = document.getElementById("profilePhotoLightbox");
+const profilePhotoClose = profilePhotoLightbox?.querySelector(".photo-lightbox-close");
+
+const setProfilePhotoOpen = (isOpen) => {
+  if (!profilePhotoLink || !profilePhotoLightbox) {
+    return;
+  }
+
+  document.body.classList.toggle("photo-view-open", isOpen);
+  profilePhotoLightbox.setAttribute("aria-hidden", String(!isOpen));
+  profilePhotoLightbox.inert = !isOpen;
+
+  if (isOpen) {
+    profilePhotoClose?.focus();
+  } else {
+    profilePhotoLink.focus();
+  }
+};
+
+profilePhotoLink?.addEventListener("click", (event) => {
+  event.preventDefault();
+  setProfilePhotoOpen(true);
+});
+
+profilePhotoClose?.addEventListener("click", () => {
+  setProfilePhotoOpen(false);
+});
+
+profilePhotoLightbox?.addEventListener("click", (event) => {
+  if (event.target === profilePhotoLightbox) {
+    setProfilePhotoOpen(false);
+  }
+});
+
+document.addEventListener("keydown", (event) => {
+  if (!document.body.classList.contains("photo-view-open")) {
+    return;
+  }
+
+  if (event.key === "Escape") {
+    setProfilePhotoOpen(false);
+  } else if (event.key === "Tab") {
+    event.preventDefault();
+    profilePhotoClose?.focus();
+  }
+});
+
 document.getElementById("contactForm").addEventListener("submit", async (event) => {
   event.preventDefault();
 
@@ -204,7 +478,7 @@ document.getElementById("contactForm").addEventListener("submit", async (event) 
   const submitButton = document.getElementById("contactSubmit");
   const formStatus = document.getElementById("formStatus");
   const formData = new FormData(form);
-  const originalButtonText = submitButton.textContent;
+  const originalButtonContent = submitButton.innerHTML;
 
   submitButton.disabled = true;
   submitButton.textContent = "Enviando...";
@@ -230,11 +504,11 @@ document.getElementById("contactForm").addEventListener("submit", async (event) 
     form.reset();
     formStatus.classList.add("success");
     formStatus.textContent = "Mensagem enviada com sucesso!";
-  } catch (error) {
+  } catch {
     formStatus.classList.add("error");
     formStatus.textContent = "Não foi possível enviar. Verifique sua conexão e tente novamente.";
   } finally {
     submitButton.disabled = false;
-    submitButton.textContent = originalButtonText;
+    submitButton.innerHTML = originalButtonContent;
   }
 });
