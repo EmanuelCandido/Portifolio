@@ -8,6 +8,7 @@
   --white: #f2f2ee;
   --orange: #f0793b;
   --lime: #85c64b;
+  --button-solid: #414343;
   --font-title: "Roboto Condensed", "Arial Narrow", sans-serif;
   --font-display: "Barlow Condensed", Impact, sans-serif;
   --font-body: "Manrope", Arial, sans-serif;
@@ -113,13 +114,14 @@ svg { display: block; }
 .nav-links .nav-cta,
 .form-card .btn-full {
   padding-inline: 16px; color: #f6f6f2;
-  border: 1px solid transparent;
-  background: linear-gradient(#323333, #1b1c1c) padding-box, var(--bevel) border-box;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 2px 4px rgba(0,0,0,.35);
+  border: 1px solid rgba(255,255,255,.12);
+  background: var(--button-solid);
+  box-shadow: 0 4px 9px rgba(0,0,0,.22);
 }
 .nav-links .nav-cta:hover,
 .form-card .btn-full:hover {
-  background: linear-gradient(#484949, #202121) padding-box, var(--bevel) border-box;
+  background: var(--button-solid);
+  filter: brightness(1.08);
 }
 
 .menu-toggle, .mobile-menu-close {
@@ -199,8 +201,12 @@ section { scroll-margin-top: 94px; }
 .btn:hover { transform: translateY(-2px); filter: brightness(1.13); }
 .btn svg, .btn img { width: 14px; height: 14px; flex: 0 0 14px; }
 .btn svg { stroke-width: 1.7; }
-.btn-primary { background: linear-gradient(#343535, #171818) padding-box, var(--bevel) border-box; box-shadow: 0 6px 10px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.18); }
-.btn-secondary { background: linear-gradient(#2d2e2e, #181919) padding-box, linear-gradient(135deg, #575958, #111 50%, #4b4d4d) border-box; box-shadow: 0 5px 9px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.14); }
+.btn-primary,
+.btn-secondary {
+  border-color: rgba(255,255,255,.12);
+  background: var(--button-solid);
+  box-shadow: 0 5px 10px rgba(0,0,0,.22);
+}
 
 /* Reusable hardware panel */
 .glass {
