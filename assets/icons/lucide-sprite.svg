@@ -1,4 +1,4 @@
-<!-- Lucide Static v0.468.0 — ISC License -->
+<!-- Lucide Static v0.468.0 — ISC License; arrow-right customized from the project asset. -->
 <svg xmlns="http://www.w3.org/2000/svg">
   <symbol id="menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <line x1="4" x2="20" y1="12" y2="12" />
@@ -9,9 +9,9 @@
     <path d="M18 6 6 18" />
     <path d="m6 6 12 12" />
   </symbol>
-  <symbol id="arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M5 12h14" />
-    <path d="m12 5 7 7-7 7" />
+  <symbol id="arrow-right" viewBox="0 0 24 24" fill="none">
+    <path d="M14.4301 5.92969L20.5001 11.9997L14.4301 18.0697" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+    <path opacity=".4" d="M3.5 12H20.33" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
   </symbol>
   <symbol id="chevron-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <path d="m6 9 6 6 6-6" />
@@ -19,9 +19,5 @@
   <symbol id="mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <rect width="20" height="16" x="2" y="4" rx="2" />
     <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-  </symbol>
-  <symbol id="arrow-up-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M7 17 17 7" />
-    <path d="M7 7h10v10" />
   </symbol>
 </svg>
