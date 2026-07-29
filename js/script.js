@@ -751,6 +751,8 @@ if (aboutCard && codeTerminal) {
 }
 
 const contactLinks = Array.from(document.querySelectorAll("[data-contact-message]"));
+const CONTACT_PREVIEW_TYPING_DURATION = 900;
+const CONTACT_PREVIEW_HOLD_DURATION = 2200;
 
 if (!reducedMotionQuery.matches) {
   contactLinks.forEach((link) => {
@@ -797,10 +799,12 @@ if (!reducedMotionQuery.matches) {
       previewText.textContent = "";
       link.classList.add("is-previewing");
       const startedAt = performance.now();
-      const typingDuration = 900;
 
       const animateMessage = (timestamp) => {
-        const progress = Math.min((timestamp - startedAt) / typingDuration, 1);
+        const progress = Math.min(
+          (timestamp - startedAt) / CONTACT_PREVIEW_TYPING_DURATION,
+          1
+        );
         const easedProgress = 1 - Math.pow(1 - progress, 3);
         const visibleCharacters = Math.max(1, Math.round(message.length * easedProgress));
         previewText.textContent = message.slice(0, visibleCharacters);
@@ -811,7 +815,7 @@ if (!reducedMotionQuery.matches) {
           animationFrame = null;
           holdTimer = window.setTimeout(() => {
             stopContactPreview();
-          }, 650);
+          }, CONTACT_PREVIEW_HOLD_DURATION);
         }
       };
 
