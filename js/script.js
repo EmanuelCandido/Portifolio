@@ -340,6 +340,516 @@ if ("IntersectionObserver" in window) {
   });
 }
 
+const finePointerQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
+const skillCards = Array.from(document.querySelectorAll(".skill-card"));
+const projectGrid = document.querySelector(".projects-grid");
+const projectCards = Array.from(document.querySelectorAll(".project-card"));
+const skillPreviewStops = new Map();
+const projectReadyTimers = new Map();
+let activeProjectCard = null;
+let projectPreviewToken = 0;
+let mediaVisibilityToken = 0;
+
+const resetVideo = (video) => {
+  if (!video) {
+    return;
+  }
+
+  video.pause();
+
+  try {
+    video.currentTime = 0;
+  } catch {
+    // The metadata may not be available yet; playback will still restart when loaded.
+  }
+};
+
+const deactivateProjectPreview = (card = activeProjectCard) => {
+  const isActiveTarget = !card || card === activeProjectCard;
+
+  if (isActiveTarget) {
+    projectPreviewToken += 1;
+  }
+
+  if (card) {
+    card.classList.remove("is-active-preview");
+    resetVideo(card.querySelector(".project-preview"));
+  }
+
+  if (isActiveTarget) {
+    activeProjectCard = null;
+    projectGrid?.classList.remove("has-active-preview");
+  }
+};
+
+const activateProjectPreview = (card) => {
+  if (!projectGrid || !card.classList.contains("load-complete")) {
+    return;
+  }
+
+  if (activeProjectCard && activeProjectCard !== card) {
+    deactivateProjectPreview(activeProjectCard);
+  }
+
+  activeProjectCard = card;
+  const token = ++projectPreviewToken;
+  const visibilityToken = mediaVisibilityToken;
+  const video = card.querySelector(".project-preview");
+
+  if (!video) {
+    card.classList.add("is-active-preview");
+    projectGrid.classList.add("has-active-preview");
+    return;
+  }
+
+  resetVideo(video);
+  const playRequest = video.play();
+
+  const showPlayingProject = () => {
+    if (
+      token !== projectPreviewToken
+      || visibilityToken !== mediaVisibilityToken
+      || activeProjectCard !== card
+    ) {
+      resetVideo(video);
+      return;
+    }
+
+    card.classList.add("is-active-preview");
+    projectGrid.classList.add("has-active-preview");
+  };
+
+  if (playRequest instanceof Promise) {
+    playRequest
+      .then(showPlayingProject)
+      .catch(() => {
+        if (token === projectPreviewToken && activeProjectCard === card) {
+          deactivateProjectPreview(card);
+        }
+      });
+  } else {
+    showPlayingProject();
+  }
+};
+
+const wantsProjectPreview = (card) => (
+  card.matches(":hover")
+  || card.contains(document.activeElement)
+);
+
+const requestProjectPreview = (card) => {
+  if (card.classList.contains("load-complete")) {
+    activateProjectPreview(card);
+    return;
+  }
+
+  if (projectReadyTimers.has(card)) {
+    return;
+  }
+
+  const waitForCard = () => {
+    projectReadyTimers.delete(card);
+
+    if (!wantsProjectPreview(card)) {
+      return;
+    }
+
+    if (card.classList.contains("load-complete")) {
+      activateProjectPreview(card);
+      return;
+    }
+
+    projectReadyTimers.set(card, window.setTimeout(waitForCard, 120));
+  };
+
+  projectReadyTimers.set(card, window.setTimeout(waitForCard, 120));
+};
+
+if (!reducedMotionQuery.matches && finePointerQuery.matches) {
+  skillCards.forEach((card) => {
+    const video = card.querySelector(".skill-preview");
+    let previewToken = 0;
+    let readyTimer = null;
+    let wantsPreview = false;
+
+    if (!video) {
+      return;
+    }
+
+    const stopSkillPreview = () => {
+      wantsPreview = false;
+      previewToken += 1;
+      window.clearTimeout(readyTimer);
+      readyTimer = null;
+      card.classList.remove("is-previewing");
+      resetVideo(video);
+    };
+
+    const startSkillPreview = () => {
+      wantsPreview = true;
+
+      if (!card.classList.contains("load-complete")) {
+        if (!readyTimer) {
+          readyTimer = window.setTimeout(() => {
+            readyTimer = null;
+
+            if (wantsPreview && card.matches(":hover")) {
+              startSkillPreview();
+            }
+          }, 120);
+        }
+
+        return;
+      }
+
+      const token = ++previewToken;
+      const visibilityToken = mediaVisibilityToken;
+      resetVideo(video);
+      const playRequest = video.play();
+
+      if (playRequest instanceof Promise) {
+        playRequest
+          .then(() => {
+            if (
+              wantsPreview
+              && token === previewToken
+              && visibilityToken === mediaVisibilityToken
+            ) {
+              card.classList.add("is-previewing");
+            } else {
+              resetVideo(video);
+            }
+          })
+          .catch(() => {
+            card.classList.remove("is-previewing");
+          });
+      } else {
+        card.classList.add("is-previewing");
+      }
+    };
+
+    skillPreviewStops.set(card, stopSkillPreview);
+    card.addEventListener("pointerenter", startSkillPreview);
+    card.addEventListener("pointerleave", stopSkillPreview);
+  });
+
+  projectCards.forEach((card) => {
+    card.addEventListener("pointerenter", () => requestProjectPreview(card));
+    card.addEventListener("pointerleave", () => {
+      if (!card.contains(document.activeElement)) {
+        deactivateProjectPreview(card);
+      }
+    });
+  });
+}
+
+if (!reducedMotionQuery.matches) {
+  projectCards.forEach((card) => {
+    card.addEventListener("focusin", () => requestProjectPreview(card));
+    card.addEventListener("focusout", (event) => {
+      if (!card.contains(event.relatedTarget) && !card.matches(":hover")) {
+        deactivateProjectPreview(card);
+      }
+    });
+  });
+
+  if ("IntersectionObserver" in window) {
+    const mediaVisibilityObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          return;
+        }
+
+        skillPreviewStops.get(entry.target)?.();
+
+        if (activeProjectCard === entry.target) {
+          deactivateProjectPreview(entry.target);
+        }
+      });
+    }, { threshold: .05 });
+
+    [...skillCards, ...projectCards].forEach((card) => {
+      mediaVisibilityObserver.observe(card);
+    });
+  }
+}
+
+const aboutTiltSurface = document.querySelector("[data-about-tilt]");
+
+if (aboutTiltSurface && !reducedMotionQuery.matches && finePointerQuery.matches) {
+  let aboutTiltFrame = null;
+
+  const resetAboutTilt = () => {
+    if (aboutTiltFrame) {
+      window.cancelAnimationFrame(aboutTiltFrame);
+    }
+
+    aboutTiltSurface.style.setProperty("--about-tilt-x", "0deg");
+    aboutTiltSurface.style.setProperty("--about-tilt-y", "0deg");
+    aboutTiltSurface.style.setProperty("--about-tilt-scale", "1");
+    aboutTiltSurface.style.setProperty("--about-shadow-x", "0px");
+    aboutTiltSurface.style.setProperty("--about-shadow-y", "0px");
+    aboutTiltSurface.style.setProperty("--about-shadow-solid", "rgba(61,63,61,0)");
+    aboutTiltSurface.style.setProperty("--about-shadow-soft", "rgba(70,72,70,0)");
+  };
+
+  aboutTiltSurface.addEventListener("pointermove", (event) => {
+    const bounds = aboutTiltSurface.getBoundingClientRect();
+    const horizontalPosition = (event.clientX - bounds.left) / bounds.width - .5;
+    const verticalPosition = (event.clientY - bounds.top) / bounds.height - .5;
+
+    if (aboutTiltFrame) {
+      window.cancelAnimationFrame(aboutTiltFrame);
+    }
+
+    aboutTiltFrame = window.requestAnimationFrame(() => {
+      aboutTiltSurface.style.setProperty("--about-tilt-x", `${verticalPosition * -5}deg`);
+      aboutTiltSurface.style.setProperty("--about-tilt-y", `${horizontalPosition * 6}deg`);
+      aboutTiltSurface.style.setProperty("--about-tilt-scale", "1.008");
+      aboutTiltSurface.style.setProperty("--about-shadow-x", `${horizontalPosition * -20}px`);
+      aboutTiltSurface.style.setProperty("--about-shadow-y", `${17 + verticalPosition * 7}px`);
+      aboutTiltSurface.style.setProperty("--about-shadow-solid", "rgba(61,63,61,.44)");
+      aboutTiltSurface.style.setProperty("--about-shadow-soft", "rgba(70,72,70,.2)");
+    });
+  });
+
+  aboutTiltSurface.addEventListener("pointerleave", resetAboutTilt);
+}
+
+const aboutCard = document.querySelector(".about-card");
+const codeTerminal = document.querySelector("[data-code-terminal]");
+const aboutCodeSamples = [
+  `@RestController
+@RequestMapping("/api/projects")
+class ProjectController {
+  @GetMapping
+  List<Project> list() {
+    return service.findAll();
+  }
+}`,
+  `@Service
+class PortfolioService {
+  Project publish(Project input) {
+    validate(input);
+    return repository.save(input);
+  }
+}`,
+  `SELECT title, stack, status
+FROM projects
+WHERE featured = true
+ORDER BY updated_at DESC;`,
+  `fetch("/api/contact", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(message)
+});`
+];
+
+if (aboutCard && codeTerminal) {
+  if (reducedMotionQuery.matches) {
+    codeTerminal.textContent = aboutCodeSamples[0];
+  } else {
+    let sampleIndex = 0;
+    let characterIndex = 0;
+    let typingDirection = 1;
+    let phase = "typing";
+    let typingTimer = null;
+    let isAboutVisible = false;
+    let isAboutReady = aboutCard.classList.contains("load-complete");
+
+    const canTypeCode = () => (
+      isAboutVisible
+      && isAboutReady
+      && !document.hidden
+    );
+
+    const scheduleCodeTick = (delay) => {
+      window.clearTimeout(typingTimer);
+      typingTimer = window.setTimeout(typeCodeTick, delay);
+    };
+
+    const typeCodeTick = () => {
+      typingTimer = null;
+
+      if (!canTypeCode()) {
+        return;
+      }
+
+      const sample = aboutCodeSamples[sampleIndex];
+
+      if (phase === "typing") {
+        characterIndex = Math.min(characterIndex + typingDirection, sample.length);
+        codeTerminal.textContent = sample.slice(0, characterIndex);
+
+        if (characterIndex >= sample.length) {
+          phase = "holding";
+          scheduleCodeTick(1100);
+        } else {
+          const character = sample[characterIndex - 1];
+          scheduleCodeTick(character === "\n" ? 70 : /[{},;]/.test(character) ? 42 : 20);
+        }
+      } else if (phase === "holding") {
+        phase = "erasing";
+        scheduleCodeTick(20);
+      } else {
+        characterIndex = Math.max(characterIndex - 3, 0);
+        codeTerminal.textContent = sample.slice(0, characterIndex);
+
+        if (characterIndex === 0) {
+          sampleIndex = (sampleIndex + 1) % aboutCodeSamples.length;
+          phase = "typing";
+          scheduleCodeTick(320);
+        } else {
+          scheduleCodeTick(10);
+        }
+      }
+    };
+
+    const syncCodeTyping = () => {
+      if (canTypeCode() && !typingTimer) {
+        scheduleCodeTick(120);
+      } else if (!canTypeCode()) {
+        window.clearTimeout(typingTimer);
+        typingTimer = null;
+      }
+    };
+
+    if ("IntersectionObserver" in window) {
+      const codeVisibilityObserver = new IntersectionObserver((entries) => {
+        isAboutVisible = entries[0]?.isIntersecting ?? false;
+        syncCodeTyping();
+      }, { threshold: .18 });
+
+      codeVisibilityObserver.observe(aboutCard);
+    } else {
+      isAboutVisible = true;
+    }
+
+    if (!isAboutReady && "MutationObserver" in window) {
+      const cardReadyObserver = new MutationObserver(() => {
+        if (aboutCard.classList.contains("load-complete")) {
+          isAboutReady = true;
+          cardReadyObserver.disconnect();
+          syncCodeTyping();
+        }
+      });
+
+      cardReadyObserver.observe(aboutCard, { attributes: true, attributeFilter: ["class"] });
+    } else if (!isAboutReady) {
+      const cardReadyPoll = window.setInterval(() => {
+        if (aboutCard.classList.contains("load-complete")) {
+          isAboutReady = true;
+          window.clearInterval(cardReadyPoll);
+          syncCodeTyping();
+        }
+      }, 160);
+    }
+
+    syncCodeTyping();
+    document.addEventListener("visibilitychange", syncCodeTyping);
+  }
+}
+
+const contactLinks = Array.from(document.querySelectorAll("[data-contact-message]"));
+
+if (!reducedMotionQuery.matches) {
+  contactLinks.forEach((link) => {
+    const previewText = link.querySelector("[data-contact-preview-text]");
+    const message = link.dataset.contactMessage || "";
+    let animationFrame = null;
+    let holdTimer = null;
+    let clearTimer = null;
+    let previewLocked = false;
+
+    if (!previewText || !message) {
+      return;
+    }
+
+    const stopContactPreview = ({ unlock = false, clearImmediately = false } = {}) => {
+      window.cancelAnimationFrame(animationFrame);
+      window.clearTimeout(holdTimer);
+      window.clearTimeout(clearTimer);
+      animationFrame = null;
+      holdTimer = null;
+      link.classList.remove("is-previewing");
+
+      if (clearImmediately) {
+        previewText.textContent = "";
+      } else {
+        clearTimer = window.setTimeout(() => {
+          previewText.textContent = "";
+          clearTimer = null;
+        }, 260);
+      }
+
+      if (unlock) {
+        previewLocked = false;
+      }
+    };
+
+    const startContactPreview = () => {
+      if (previewLocked) {
+        return;
+      }
+
+      previewLocked = true;
+      window.clearTimeout(clearTimer);
+      previewText.textContent = "";
+      link.classList.add("is-previewing");
+      const startedAt = performance.now();
+      const typingDuration = 900;
+
+      const animateMessage = (timestamp) => {
+        const progress = Math.min((timestamp - startedAt) / typingDuration, 1);
+        const easedProgress = 1 - Math.pow(1 - progress, 3);
+        const visibleCharacters = Math.max(1, Math.round(message.length * easedProgress));
+        previewText.textContent = message.slice(0, visibleCharacters);
+
+        if (progress < 1) {
+          animationFrame = window.requestAnimationFrame(animateMessage);
+        } else {
+          animationFrame = null;
+          holdTimer = window.setTimeout(() => {
+            stopContactPreview();
+          }, 650);
+        }
+      };
+
+      animationFrame = window.requestAnimationFrame(animateMessage);
+    };
+
+    if (finePointerQuery.matches) {
+      link.addEventListener("pointerenter", startContactPreview);
+      link.addEventListener("pointerleave", () => {
+        stopContactPreview({ unlock: true, clearImmediately: true });
+      });
+    }
+
+    link.addEventListener("focus", startContactPreview);
+    link.addEventListener("blur", () => {
+      stopContactPreview({ unlock: true, clearImmediately: true });
+    });
+  });
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) {
+    return;
+  }
+
+  mediaVisibilityToken += 1;
+  skillPreviewStops.forEach((stopPreview) => stopPreview());
+  projectReadyTimers.forEach((timer) => {
+    window.clearTimeout(timer);
+  });
+  projectReadyTimers.clear();
+
+  deactivateProjectPreview();
+  projectCards.forEach((card) => {
+    resetVideo(card.querySelector(".project-preview"));
+  });
+});
+
 const navLinks = Array.from(document.querySelectorAll('.nav-links a[href^="#"]'));
 const mobileMenuLinks = Array.from(document.querySelectorAll('.mobile-menu-links a[href^="#"]'));
 const navSections = navLinks

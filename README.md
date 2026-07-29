@@ -11,8 +11,12 @@ O projeto combina uma identidade visual autoral com uma experiência responsiva 
 - Animação de digitação na apresentação principal.
 - Entrada progressiva dos conteúdos durante a navegação.
 - Cards com animação de carregamento, barra de progresso e porcentagem.
+- Pré-visualizações animadas das especialidades, reproduzidas somente durante a interação.
+- Demonstrações em vídeo dos projetos de Barbearia e Portfólio, com destaque do projeto ativo.
+- Terminal dinâmico na seção Sobre, com exemplos de Java, Spring Boot, SQL e JavaScript.
+- Mensagens contextuais nos canais de contato, sem impedir o acesso aos links.
 - Galeria da foto de perfil com visualização ampliada e navegação por teclado.
-- Formulário de contato integrado ao cliente de e-mail do visitante.
+- Formulário de contato com envio assíncrono e retorno visual de sucesso ou erro.
 - Ícones SVG locais e imagens otimizadas, sem dependência de bibliotecas de interface.
 - Respeito à preferência de movimento reduzido configurada no sistema.
 
@@ -31,7 +35,10 @@ O projeto combina uma identidade visual autoral com uma experiência responsiva 
 Portifolio/
 ├── assets/
 │   ├── icons/
-│   └── images/
+│   ├── images/
+│   └── videos/
+│       ├── projects/
+│       └── skills/
 ├── css/
 │   └── style.css
 ├── js/
@@ -68,6 +75,7 @@ Para trabalhar com recarregamento automático, também é possível servir a pas
 - `js/script.js`: interações, menu móvel, efeitos de entrada, formulário e visualização da foto.
 - `assets/images/`: foto de perfil e imagens dos projetos.
 - `assets/icons/`: ícones SVG utilizados na interface.
+- `assets/videos/`: prévias locais, compactadas e sem áudio para especialidades e projetos.
 
 Ao substituir uma imagem ou um ícone, preserve nomes descritivos, dimensões adequadas e textos alternativos relevantes.
 
