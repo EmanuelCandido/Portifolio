@@ -442,7 +442,7 @@ body.photo-view-open .photo-lightbox img { transform: scale(1); }
 .field input, .field textarea { width: 100%; padding: 13px 14px; color: #eee; border: 1px solid rgba(255,255,255,.09); border-radius: 6px; outline: none; background: #181919; box-shadow: inset 2px 2px 5px rgba(0,0,0,.55), inset -1px -1px 1px rgba(255,255,255,.05); font-size: .74rem; }
 .field input:focus, .field textarea:focus { border-color: rgba(240,121,59,.72); box-shadow: 0 0 0 3px rgba(240,121,59,.13), inset 2px 2px 5px rgba(0,0,0,.55); }
 .field input::placeholder, .field textarea::placeholder { color: #757772; }
-.btn-full { width: 100%; margin-top: 1px; }.form-status { min-height: 13px; color: #e8e8e3; text-align: center; font-size: .58rem; }.form-status.success { color: var(--lime); }.form-status.error { color: #ff8b8b; }
+.btn-full { width: 100%; margin-top: 1px; }.form-status { min-height: 13px; color: #e8e8e3; text-align: center; font-size: .58rem; }.form-status.success { color: #fff; }.form-status.error { color: #ff8b8b; }
 
 footer { min-height: 104px; padding: 28px 0; display: flex; align-items: center; border-top: 1px solid #9e9f9b; }
 .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 18px; color: #5a5c59; font: 500 .62rem/1.5 var(--font-mono); text-transform: uppercase; letter-spacing: .045em; }
