@@ -867,6 +867,7 @@ document.addEventListener("visibilitychange", () => {
   });
 });
 
+const navList = document.querySelector(".nav-links");
 const navLinks = Array.from(document.querySelectorAll('.nav-links a[href^="#"]'));
 const mobileMenuLinks = Array.from(document.querySelectorAll('.mobile-menu-links a[href^="#"]'));
 const navSections = navLinks
@@ -875,10 +876,30 @@ const navSections = navLinks
 
 let activeNavFrame = null;
 
+const updateNavIndicator = (activeLink) => {
+  const canShowIndicator = activeLink
+    && !activeLink.classList.contains("nav-cta")
+    && activeLink.offsetParent !== null;
+
+  if (!navList || !canShowIndicator) {
+    navList?.classList.remove("has-active-indicator");
+    return;
+  }
+
+  const navListRect = navList.getBoundingClientRect();
+  const activeLinkRect = activeLink.getBoundingClientRect();
+  const indicatorX = activeLinkRect.left - navListRect.left;
+
+  navList.style.setProperty("--active-indicator-x", `${indicatorX}px`);
+  navList.style.setProperty("--active-indicator-width", `${activeLinkRect.width}px`);
+  navList.classList.add("has-active-indicator");
+};
+
 const updateActiveNav = () => {
   const marker = window.scrollY + window.innerHeight * 0.34;
   const atPageEnd = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 4;
   let activeSectionId = null;
+  let activeDesktopLink = null;
 
   navSections.forEach((section) => {
     if (section.offsetTop <= marker) {
@@ -896,11 +917,15 @@ const updateActiveNav = () => {
 
     if (isActive) {
       link.setAttribute("aria-current", "page");
+      if (navLinks.includes(link)) {
+        activeDesktopLink = link;
+      }
     } else {
       link.removeAttribute("aria-current");
     }
   });
 
+  updateNavIndicator(activeDesktopLink);
   activeNavFrame = null;
 };
 
@@ -912,6 +937,7 @@ window.addEventListener("scroll", () => {
 
 window.addEventListener("resize", updateActiveNav);
 updateActiveNav();
+window.requestAnimationFrame(() => navList?.classList.add("indicator-ready"));
 
 const menuToggle = document.querySelector(".menu-toggle");
 const mobileMenu = document.getElementById("mobileMenu");
