@@ -1,11 +1,14 @@
 document.getElementById("year").textContent = new Date().getFullYear();
 
 const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+const desktop3DTiltQuery = window.matchMedia(
+  "(hover: hover) and (pointer: fine) and (min-width: 651px)"
+);
 const heroTitle = document.querySelector(".hero-title");
 const heroSection = document.querySelector(".hero");
 const heroTiltCard = document.querySelector("[data-tilt-card]");
 
-if (heroTiltCard && !reducedMotionQuery.matches && window.matchMedia("(pointer: fine)").matches) {
+if (heroTiltCard && !reducedMotionQuery.matches && desktop3DTiltQuery.matches) {
   let tiltFrame = null;
 
   const resetHeroTilt = () => {
@@ -576,7 +579,7 @@ if (!reducedMotionQuery.matches) {
 
 const aboutTiltSurface = document.querySelector("[data-about-tilt]");
 
-if (aboutTiltSurface && !reducedMotionQuery.matches && finePointerQuery.matches) {
+if (aboutTiltSurface && !reducedMotionQuery.matches && desktop3DTiltQuery.matches) {
   let aboutTiltFrame = null;
 
   const resetAboutTilt = () => {
