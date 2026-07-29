@@ -3,6 +3,47 @@ document.getElementById("year").textContent = new Date().getFullYear();
 const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 const heroTitle = document.querySelector(".hero-title");
 const heroSection = document.querySelector(".hero");
+const heroTiltCard = document.querySelector("[data-tilt-card]");
+
+if (heroTiltCard && !reducedMotionQuery.matches && window.matchMedia("(pointer: fine)").matches) {
+  let tiltFrame = null;
+
+  const resetHeroTilt = () => {
+    if (tiltFrame) {
+      window.cancelAnimationFrame(tiltFrame);
+    }
+
+    heroTiltCard.style.setProperty("--tilt-x", "0deg");
+    heroTiltCard.style.setProperty("--tilt-y", "0deg");
+    heroTiltCard.style.setProperty("--tilt-scale", "1");
+    heroTiltCard.style.setProperty("--tilt-shadow-x", "0px");
+    heroTiltCard.style.setProperty("--tilt-shadow-y", "0px");
+    heroTiltCard.style.setProperty("--tilt-shadow-solid", "rgba(61,63,61,0)");
+    heroTiltCard.style.setProperty("--tilt-shadow-soft", "rgba(70,72,70,0)");
+  };
+
+  heroTiltCard.addEventListener("pointermove", (event) => {
+    const bounds = heroTiltCard.getBoundingClientRect();
+    const horizontalPosition = (event.clientX - bounds.left) / bounds.width - 0.5;
+    const verticalPosition = (event.clientY - bounds.top) / bounds.height - 0.5;
+
+    if (tiltFrame) {
+      window.cancelAnimationFrame(tiltFrame);
+    }
+
+    tiltFrame = window.requestAnimationFrame(() => {
+      heroTiltCard.style.setProperty("--tilt-x", `${verticalPosition * -7}deg`);
+      heroTiltCard.style.setProperty("--tilt-y", `${horizontalPosition * 8}deg`);
+      heroTiltCard.style.setProperty("--tilt-scale", "1.012");
+      heroTiltCard.style.setProperty("--tilt-shadow-x", `${horizontalPosition * -22}px`);
+      heroTiltCard.style.setProperty("--tilt-shadow-y", `${18 + verticalPosition * 8}px`);
+      heroTiltCard.style.setProperty("--tilt-shadow-solid", "rgba(61,63,61,.48)");
+      heroTiltCard.style.setProperty("--tilt-shadow-soft", "rgba(70,72,70,.22)");
+    });
+  });
+
+  heroTiltCard.addEventListener("pointerleave", resetHeroTilt);
+}
 
 const startHeroTyping = () => {
   if (!heroTitle || reducedMotionQuery.matches) {
