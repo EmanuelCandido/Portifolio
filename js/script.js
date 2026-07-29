@@ -582,8 +582,10 @@ if (aboutTiltSurface && !reducedMotionQuery.matches && finePointerQuery.matches)
   const resetAboutTilt = () => {
     if (aboutTiltFrame) {
       window.cancelAnimationFrame(aboutTiltFrame);
+      aboutTiltFrame = null;
     }
 
+    aboutTiltSurface.classList.remove("is-tilting");
     aboutTiltSurface.style.setProperty("--about-tilt-x", "0deg");
     aboutTiltSurface.style.setProperty("--about-tilt-y", "0deg");
     aboutTiltSurface.style.setProperty("--about-tilt-scale", "1");
@@ -593,7 +595,12 @@ if (aboutTiltSurface && !reducedMotionQuery.matches && finePointerQuery.matches)
     aboutTiltSurface.style.setProperty("--about-shadow-soft", "rgba(70,72,70,0)");
   };
 
+  aboutTiltSurface.addEventListener("pointerenter", () => {
+    aboutTiltSurface.classList.add("is-tilting");
+  });
+
   aboutTiltSurface.addEventListener("pointermove", (event) => {
+    aboutTiltSurface.classList.add("is-tilting");
     const bounds = aboutTiltSurface.getBoundingClientRect();
     const horizontalPosition = (event.clientX - bounds.left) / bounds.width - .5;
     const verticalPosition = (event.clientY - bounds.top) / bounds.height - .5;
@@ -603,6 +610,7 @@ if (aboutTiltSurface && !reducedMotionQuery.matches && finePointerQuery.matches)
     }
 
     aboutTiltFrame = window.requestAnimationFrame(() => {
+      aboutTiltFrame = null;
       aboutTiltSurface.style.setProperty("--about-tilt-x", `${verticalPosition * -5}deg`);
       aboutTiltSurface.style.setProperty("--about-tilt-y", `${horizontalPosition * 6}deg`);
       aboutTiltSurface.style.setProperty("--about-tilt-scale", "1.008");
@@ -614,6 +622,8 @@ if (aboutTiltSurface && !reducedMotionQuery.matches && finePointerQuery.matches)
   });
 
   aboutTiltSurface.addEventListener("pointerleave", resetAboutTilt);
+  aboutTiltSurface.addEventListener("pointercancel", resetAboutTilt);
+  window.addEventListener("blur", resetAboutTilt);
 }
 
 const aboutCard = document.querySelector(".about-card");

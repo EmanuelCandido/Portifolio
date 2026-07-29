@@ -671,9 +671,16 @@ footer { min-height: 104px; padding: 28px 0; display: flex; align-items: center;
   transition:
     opacity .62s ease,
     filter .78s cubic-bezier(.2, .72, .2, 1),
-    transform .25s ease-out,
-    box-shadow .25s ease-out;
+    transform .72s cubic-bezier(.16, .78, .2, 1),
+    box-shadow .64s cubic-bezier(.16, .78, .2, 1);
   will-change: transform;
+}
+.about-tilt-surface.is-tilting {
+  transition:
+    opacity .62s ease,
+    filter .78s cubic-bezier(.2, .72, .2, 1),
+    transform .18s ease-out,
+    box-shadow .2s ease-out;
 }
 .about-tilt-surface::after {
   content: "";
