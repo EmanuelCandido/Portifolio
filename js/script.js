@@ -867,6 +867,50 @@ document.addEventListener("visibilitychange", () => {
   });
 });
 
+const scrollRuler = document.querySelector(".scroll-ruler");
+const scrollRulerMarker = document.querySelector(".scroll-ruler-marker");
+const pageFooter = document.querySelector("footer");
+let scrollRulerFrame = null;
+
+const updateScrollRuler = () => {
+  if (!scrollRuler || !scrollRulerMarker) {
+    scrollRulerFrame = null;
+    return;
+  }
+
+  const pageHeight = document.documentElement.scrollHeight;
+  const maxScroll = Math.max(pageHeight - window.innerHeight, 0);
+  const progress = maxScroll > 0
+    ? Math.min(Math.max(window.scrollY / maxScroll, 0), 1)
+    : 0;
+  const markerTravel = Math.max(scrollRuler.clientHeight - scrollRulerMarker.offsetHeight, 0);
+  const rulerTop = scrollRuler.getBoundingClientRect().top;
+  const footerLimit = pageFooter
+    ? Math.max(pageFooter.getBoundingClientRect().top - rulerTop - scrollRulerMarker.offsetHeight, 0)
+    : markerTravel;
+  const markerPosition = Math.min(progress * markerTravel, markerTravel, footerLimit);
+
+  scrollRulerMarker.style.transform = `translate3d(0, ${markerPosition}px, 0)`;
+  scrollRulerFrame = null;
+};
+
+const queueScrollRulerUpdate = () => {
+  if (!scrollRulerFrame) {
+    scrollRulerFrame = window.requestAnimationFrame(updateScrollRuler);
+  }
+};
+
+window.addEventListener("scroll", queueScrollRulerUpdate, { passive: true });
+window.addEventListener("resize", queueScrollRulerUpdate);
+window.addEventListener("load", queueScrollRulerUpdate);
+
+if ("ResizeObserver" in window) {
+  const pageResizeObserver = new ResizeObserver(queueScrollRulerUpdate);
+  pageResizeObserver.observe(document.documentElement);
+}
+
+queueScrollRulerUpdate();
+
 const navList = document.querySelector(".nav-links");
 const navLinks = Array.from(document.querySelectorAll('.nav-links a[href^="#"]'));
 const mobileMenuLinks = Array.from(document.querySelectorAll('.mobile-menu-links a[href^="#"]'));

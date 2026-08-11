@@ -18,6 +18,9 @@
   --font-mono: "IBM Plex Mono", monospace;
   --page-width: 1760px;
   --page-gutter: clamp(20px, 2.5vw, 48px);
+  --ruler-left: max(9px, calc((100vw - var(--page-width)) / 2 - 52px));
+  --ruler-tick-offset: 5px;
+  --ruler-tick-width: 12px;
   --panel-shadow: 0 12px 26px rgba(0, 0, 0, .16), 0 3px 9px rgba(0, 0, 0, .09), inset 0 1px 0 rgba(255,255,255,.14), inset 0 -1px 0 rgba(0,0,0,.55);
   --bevel: linear-gradient(135deg, #5c5e5e 0%, #222323 23%, #101111 50%, #363838 100%);
 }
@@ -44,6 +47,12 @@ body {
     linear-gradient(115deg, var(--paper-deep), var(--paper) 40%, #ddddda 100%);
 }
 
+main {
+  background:
+    linear-gradient(to bottom, rgba(141,143,139,.7) 0 1px, transparent 1px 12px)
+      calc(var(--ruler-left) + var(--ruler-tick-offset)) 20px / var(--ruler-tick-width) 12px repeat-y;
+}
+
 body::before {
   content: "";
   position: fixed;
@@ -66,6 +75,29 @@ svg { display: block; }
 }
 
 .container { width: min(var(--page-width), calc(100% - var(--page-gutter) * 2)); margin-inline: auto; }
+
+/* Scroll progress ruler */
+.scroll-ruler {
+  position: fixed;
+  z-index: 19;
+  top: 20px;
+  bottom: 20px;
+  left: var(--ruler-left);
+  width: 19px;
+  pointer-events: none;
+}
+
+.scroll-ruler-marker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 19px;
+  height: 2px;
+  background: #111212;
+  box-shadow: 0 -2px 0 var(--paper), 0 2px 0 var(--paper);
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+}
 
 /* Top instrument bar */
 .nav {
@@ -182,16 +214,6 @@ svg { display: block; }
 section { scroll-margin-top: 94px; }
 .hero { padding: 122px 0 46px; }
 .hero .container { padding-left: clamp(0px, 3vw, 44px); }
-.hero .container { position: relative; }
-.hero .container::before {
-  content: ""; position: absolute; top: 2px; bottom: 38px; left: -47px; width: 12px;
-  background: repeating-linear-gradient(to bottom, #8d8f8b 0 1px, transparent 1px 12px);
-  opacity: .7;
-}
-.hero .container::after {
-  content: ""; position: absolute; top: 120px; left: -52px; width: 19px; height: 2px; background: var(--orange);
-  box-shadow: 0 -2px 0 var(--paper), 0 2px 0 var(--paper);
-}
 .hero-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(410px, .95fr); gap: clamp(36px, 5vw, 78px); align-items: center; }
 .section-label, .machine-label {
   display: flex; align-items: center; gap: 10px;
@@ -819,7 +841,6 @@ footer { min-height: 104px; padding: 28px 0; display: flex; align-items: center;
 @media (max-width: 980px) {
   :root { --page-gutter: 28px; }
   .hero .container { padding-left: 0; }
-  .hero .container::before, .hero .container::after { display: none; }
   .hero-grid { grid-template-columns: 1fr; gap: 36px; }.hero-card { width: 100%; justify-self: stretch; }
   .section-title, .section-desc { max-width: 620px; }
   #skills .section-desc, #projetos .section-desc { white-space: normal; }
@@ -830,7 +851,14 @@ footer { min-height: 104px; padding: 28px 0; display: flex; align-items: center;
 }
 
 @media (max-width: 650px) {
-  :root { --page-gutter: 18px; }
+  :root {
+    --page-gutter: 18px;
+    --ruler-left: 2px;
+    --ruler-tick-offset: 4px;
+    --ruler-tick-width: 10px;
+  }
+  .scroll-ruler { width: 15px; }
+  .scroll-ruler-marker { width: 15px; }
   .nav { top: 10px; width: calc(100% - 24px); }.nav-inner { height: 54px; }.brand-name { font-size: .8rem; }.brand-mark { font-size: 1.45rem; }.brand-separator { font-size: 1.3rem; }.brand-role { font-size: .36rem; }
   .nav-links::before { display: none; }
   .nav-links a:not(.nav-cta) { display: none; }.nav-links .nav-cta { min-height: 33px; padding-inline: 12px; font-size: .5rem; }.menu-toggle { display: grid; }
