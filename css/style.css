@@ -878,7 +878,7 @@ svg {
   grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: var(--grid-gap);
 }
-.skills-list { grid-column: 1 / span 7; border-top: 1px solid var(--line); }
+.skills-list { grid-column: 1 / span 6; border-top: 1px solid var(--line); }
 .skill {
   --p: 0;
   position: relative;
@@ -937,7 +937,7 @@ svg {
 .skill.is-active .skill-icon { color: var(--bg); background: var(--ink); border-color: var(--ink); transform: rotate(-6deg); }
 .skill-media-inline { display: none; }
 
-.skills-stage { grid-column: 9 / -1; position: relative; }
+.skills-stage { grid-column: 7 / -1; position: relative; }
 .stage-frame {
   position: sticky;
   top: calc(var(--nav-h) + 24px);
