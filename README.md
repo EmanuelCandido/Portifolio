@@ -6,25 +6,24 @@ O projeto combina uma identidade visual autoral com uma experiência responsiva 
 
 ## Destaques
 
-- Apresentação profissional, especialidades, projetos e canais de contato em uma única página.
-- Layout responsivo para desktop, tablet e dispositivos móveis.
-- Animação de digitação na apresentação principal.
-- Entrada progressiva dos conteúdos durante a navegação.
-- Cards com animação de carregamento, barra de progresso e porcentagem.
-- Pré-visualizações animadas das especialidades, reproduzidas somente durante a interação.
-- Demonstrações em vídeo dos projetos de Barbearia e Portfólio, com destaque do projeto ativo.
-- Terminal dinâmico na seção Sobre, com exemplos de Java, Spring Boot, SQL e JavaScript.
-- Mensagens contextuais nos canais de contato, sem impedir o acesso aos links.
-- Galeria da foto de perfil com visualização ampliada e navegação por teclado.
-- Formulário de contato com envio assíncrono e retorno visual de sucesso ou erro.
-- Ícones SVG locais e imagens otimizadas, sem dependência de bibliotecas de interface.
-- Respeito à preferência de movimento reduzido configurada no sistema.
+- Identidade editorial com tipografia Geist e Geist Mono, grid de 12 colunas e paleta grafite com laranja de destaque.
+- Tema claro e escuro, seguindo o sistema por padrão e com alternância manual salva no navegador.
+- Introdução curta (exibida uma vez por sessão), títulos revelados palavra a palavra e conteúdos que entram durante a rolagem.
+- Régua lateral de progresso com marcação das seções e navegação com indicador animado da seção ativa.
+- Cartão de perfil com inclinação 3D, foto ampliável e chip animado de requisições de API.
+- Especialidades com vídeos autorais (fluxo de API, modelagem de dados, interface responsiva e grafo do Git) sincronizados à rolagem.
+- Projetos com prévias animadas que tocam ao entrar na tela e cursor contextual.
+- Janela de IDE na seção Sobre, com abas, digitação e destaque de sintaxe para Java, SQL e JavaScript.
+- Contato com cópia rápida do email, formulário com rótulos flutuantes, validação acessível e envio assíncrono.
+- Menu mobile em tela cheia e foto ampliada usando `<dialog>` nativo (foco e tecla Esc tratados pelo navegador).
+- Metadados de compartilhamento (Open Graph), dados estruturados (JSON-LD), favicon SVG e ícone para iOS.
+- Respeito à preferência de movimento reduzido e funcionamento sem JavaScript (conteúdo sempre visível).
 
 ## Tecnologias
 
 - HTML5 semântico
-- CSS3
-- JavaScript
+- CSS3 (custom properties, grid, `color-mix`, `:has`)
+- JavaScript puro, sem dependências
 - Google Fonts
 - SVG
 - Git e GitHub
@@ -34,8 +33,9 @@ O projeto combina uma identidade visual autoral com uma experiência responsiva 
 ```text
 Portifolio/
 ├── assets/
-│   ├── icons/
-│   ├── images/
+│   ├── documents/        # currículo em PDF
+│   ├── icons/            # favicon.svg
+│   ├── images/           # foto, capas dos projetos, og-cover e pôsteres dos vídeos
 │   └── videos/
 │       ├── projects/
 │       └── skills/
@@ -70,20 +70,28 @@ Para trabalhar com recarregamento automático, também é possível servir a pas
 
 ## Personalização
 
-- `index.html`: conteúdo, links, estrutura e informações dos projetos.
-- `css/style.css`: identidade visual, layout, responsividade e animações.
-- `js/script.js`: interações, menu móvel, efeitos de entrada, formulário e visualização da foto.
-- `assets/images/`: foto de perfil e imagens dos projetos.
-- `assets/icons/`: ícones SVG utilizados na interface.
-- `assets/videos/`: prévias locais, compactadas e sem áudio para especialidades e projetos.
+- `index.html`: conteúdo, links, projetos e o sprite de ícones SVG (no início do `<body>`).
+- `css/style.css`: tokens de design (cores dos dois temas, fontes, espaçamentos) no topo, seguidos de componentes, seções e animações.
+- `js/script.js`: tema, introdução, navegação, revelações, vídeos, IDE, formulário e diálogos.
+- `assets/images/`: imagens otimizadas em WebP/JPG; `og-cover.jpg` é a imagem de compartilhamento (1200×630).
+- `assets/videos/`: prévias locais, compactadas e sem áudio.
 
-Ao substituir uma imagem ou um ícone, preserve nomes descritivos, dimensões adequadas e textos alternativos relevantes.
+Ao substituir uma imagem, preserve nomes descritivos, dimensões adequadas e textos alternativos relevantes.
 
 ## Projetos apresentados
 
-- **Sistema de Barbeiro:** plataforma de agendamento com experiência para clientes, painel administrativo e Firebase.
-- **Nosso Cantinho:** aplicativo Android nativo para finanças compartilhadas e comunicação privada.
-- **Portfólio Profissional:** este projeto, criado para consolidar minha apresentação, competências e trabalhos em uma experiência web consistente.
+- **ClinicCase** ([GitHub](https://github.com/EmanuelCandido/ClinicCase) · [site](https://cliniccase.site)): plataforma educacional com IA generativa para criação de casos clínicos, desenvolvida no PIBIC (Java, Spring Boot, PostgreSQL, React e TypeScript).
+- **[Agendamento de Barbearia](https://github.com/EmanuelCandido/Sistema-de-barbeiro):** agendamento online pelo celular e painel administrativo, com React, TypeScript e Firebase.
+- **[Link na Bio — Personal Trainer](https://github.com/EmanuelCandido/Linktree):** página de links com serviços em destaque, tema claro/escuro e contato pelo WhatsApp.
+- **[Eco City](https://github.com/EmanuelCandido/Jogo_INOVATECH):** jogo educativo 3D no navegador sobre sustentabilidade.
+- **[TopNote](https://github.com/EmanuelCandido/TopNote):** aplicativo de notas para Windows aberto por atalho, com dados salvos localmente.
+
+## Artigos e eventos
+
+- **DELTA SAÚDE 2026** — 5º Congresso Internacional de Estudantes e Profissionais da Saúde (painel eletrônico, com certificado, [banner](assets/documents/banner-delta-saude-2026.pdf)).
+- **Opala Tech V** — IFPI Pedro II, 1 a 3 de junho: artigo sobre a arquitetura LLM + RAG do ClinicCase (com certificado, [PDF](assets/documents/artigo-opala-tech-v.pdf)).
+- **PIBIC** — artigo sobre a plataforma ClinicCase ([PDF](assets/documents/artigo-pibic-clinic-case.pdf)).
+- **Git e GitHub na prática** — curso de extensão do Centro Universitário Santo Agostinho.
 
 ## Autor
 

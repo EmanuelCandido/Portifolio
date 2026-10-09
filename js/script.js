@@ -1,1152 +1,955 @@
-document.getElementById("year").textContent = new Date().getFullYear();
+/* ==========================================================================
+   Emanuel Cândido — Portfólio v2
+   JavaScript sem dependências. Cada bloco é independente e tolera ausência
+   dos elementos que controla.
+   ========================================================================== */
 
-const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-const desktop3DTiltQuery = window.matchMedia(
-  "(hover: hover) and (pointer: fine) and (min-width: 651px)"
-);
-const heroTitle = document.querySelector(".hero-title");
-const heroSection = document.querySelector(".hero");
-const heroTiltCard = document.querySelector("[data-tilt-card]");
+window.__portfolioReady = true;
 
-if (heroTiltCard && !reducedMotionQuery.matches && desktop3DTiltQuery.matches) {
-  let tiltFrame = null;
+const root = document.documentElement;
+const $ = (selector, scope = document) => scope.querySelector(selector);
+const $$ = (selector, scope = document) => Array.from(scope.querySelectorAll(selector));
+const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
-  const resetHeroTilt = () => {
-    if (tiltFrame) {
-      window.cancelAnimationFrame(tiltFrame);
-    }
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+const compactQuery = window.matchMedia("(max-width: 960px)");
 
-    heroTiltCard.style.setProperty("--tilt-x", "0deg");
-    heroTiltCard.style.setProperty("--tilt-y", "0deg");
-    heroTiltCard.style.setProperty("--tilt-scale", "1");
-    heroTiltCard.style.setProperty("--tilt-shadow-x", "0px");
-    heroTiltCard.style.setProperty("--tilt-shadow-y", "0px");
-    heroTiltCard.style.setProperty("--tilt-shadow-solid", "rgba(61,63,61,0)");
-    heroTiltCard.style.setProperty("--tilt-shadow-soft", "rgba(70,72,70,0)");
-  };
-
-  heroTiltCard.addEventListener("pointermove", (event) => {
-    const bounds = heroTiltCard.getBoundingClientRect();
-    const horizontalPosition = (event.clientX - bounds.left) / bounds.width - 0.5;
-    const verticalPosition = (event.clientY - bounds.top) / bounds.height - 0.5;
-
-    if (tiltFrame) {
-      window.cancelAnimationFrame(tiltFrame);
-    }
-
-    tiltFrame = window.requestAnimationFrame(() => {
-      heroTiltCard.style.setProperty("--tilt-x", `${verticalPosition * -7}deg`);
-      heroTiltCard.style.setProperty("--tilt-y", `${horizontalPosition * 8}deg`);
-      heroTiltCard.style.setProperty("--tilt-scale", "1.012");
-      heroTiltCard.style.setProperty("--tilt-shadow-x", `${horizontalPosition * -22}px`);
-      heroTiltCard.style.setProperty("--tilt-shadow-y", `${18 + verticalPosition * 8}px`);
-      heroTiltCard.style.setProperty("--tilt-shadow-solid", "rgba(61,63,61,.48)");
-      heroTiltCard.style.setProperty("--tilt-shadow-soft", "rgba(70,72,70,.22)");
-    });
-  });
-
-  heroTiltCard.addEventListener("pointerleave", resetHeroTilt);
-}
-
-const startHeroTyping = () => {
-  if (!heroTitle || reducedMotionQuery.matches) {
-    return;
+const storage = {
+  get(store, key) {
+    try { return window[store].getItem(key); } catch { return null; }
+  },
+  set(store, key, value) {
+    try { window[store].setItem(key, value); } catch { /* armazenamento indisponível */ }
   }
-
-  const accessibleTitle = heroTitle.textContent.replace(/\s+/g, " ").trim();
-  const textWalker = document.createTreeWalker(heroTitle, NodeFilter.SHOW_TEXT);
-  const textNodes = [];
-
-  while (textWalker.nextNode()) {
-    textNodes.push(textWalker.currentNode);
-  }
-
-  heroTitle.setAttribute("aria-label", accessibleTitle);
-  heroTitle.classList.add("is-typing");
-
-  textNodes.forEach((textNode) => {
-    const fragment = document.createDocumentFragment();
-
-    Array.from(textNode.textContent).forEach((character) => {
-      const characterElement = document.createElement("span");
-      characterElement.className = "typing-char";
-      characterElement.setAttribute("aria-hidden", "true");
-      characterElement.textContent = character;
-      fragment.appendChild(characterElement);
-    });
-
-    textNode.replaceWith(fragment);
-  });
-
-  const characters = Array.from(heroTitle.querySelectorAll(".typing-char"));
-  const caret = document.createElement("span");
-  caret.className = "typing-caret";
-  caret.setAttribute("aria-hidden", "true");
-  caret.textContent = "|";
-
-  if (!characters.length) {
-    return;
-  }
-
-  characters[0].before(caret);
-
-  let characterIndex = 0;
-
-  const typeNextCharacter = () => {
-    const character = characters[characterIndex];
-
-    character.classList.add("is-typed");
-    character.after(caret);
-    characterIndex += 1;
-
-    if (characterIndex < characters.length) {
-      const typedCharacter = character.textContent;
-      const pause = /[.,]/.test(typedCharacter) ? 120 : typedCharacter === " " ? 22 : 36;
-      window.setTimeout(typeNextCharacter, pause);
-    } else {
-      heroTitle.classList.add("typing-complete");
-      heroSection?.classList.add("typing-finished");
-      window.setTimeout(() => caret.remove(), 360);
-    }
-  };
-
-  window.setTimeout(typeNextCharacter, 420);
 };
 
-startHeroTyping();
+$$("[data-year]").forEach((node) => { node.textContent = new Date().getFullYear(); });
 
-const cardRevealSelector = [
-  ".skill-card",
-  ".project-card",
-  ".about-card",
-  ".contact-card",
-  ".form-card"
-].join(",");
+/* ---------- Tema claro/escuro ---------- */
+const themeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+const themeColors = { light: "#f3f2ee", dark: "#0c0c0b" };
 
-const CARD_LOAD_DURATION = 1550;
-const CARD_LOAD_COMPLETE_DELAY = 140;
-const CARD_LOADER_REMOVAL_DELAY = 500;
+const currentTheme = () => root.dataset.theme || (themeQuery.matches ? "dark" : "light");
 
-const createCardLoader = (element) => {
-  const loader = document.createElement("div");
-  const percentage = document.createElement("span");
-  const track = document.createElement("span");
-  const fill = document.createElement("span");
-
-  loader.className = "card-upload-loader";
-  loader.setAttribute("aria-hidden", "true");
-  percentage.className = "card-upload-percentage";
-  percentage.textContent = "0%";
-  track.className = "card-upload-track";
-  fill.className = "card-upload-fill";
-
-  track.appendChild(fill);
-  loader.append(percentage, track);
-  element.appendChild(loader);
+const syncThemeMeta = () => {
+  if (!root.dataset.theme) return;
+  $$('meta[name="theme-color"]').forEach((meta) => { meta.content = themeColors[root.dataset.theme]; });
 };
 
-const getRevealDelay = (element) => {
-  const cssDelay = getComputedStyle(element).getPropertyValue("--reveal-delay").trim();
-  const delayValue = Number.parseFloat(cssDelay) || 0;
-  return cssDelay.endsWith("ms") ? delayValue : delayValue * 1000;
-};
-
-const startCardLoading = (element) => {
-  if (element.dataset.loadingStarted === "true") {
-    return;
-  }
-
-  element.dataset.loadingStarted = "true";
-  element.classList.add("visible");
-
-  const percentage = element.querySelector(".card-upload-percentage");
-
-  if (reducedMotionQuery.matches || !percentage) {
-    element.style.setProperty("--upload-progress", "1");
-    element.classList.add("load-complete");
-    element.querySelector(".card-upload-loader")?.remove();
-    return;
-  }
-
-  const delay = getRevealDelay(element);
-
-  window.setTimeout(() => {
-    const startedAt = performance.now();
-
-    const updateProgress = (timestamp) => {
-      const elapsed = Math.min((timestamp - startedAt) / CARD_LOAD_DURATION, 1);
-      const progress = elapsed < .5
-        ? 2 * elapsed * elapsed
-        : 1 - Math.pow(-2 * elapsed + 2, 2) / 2;
-
-      element.style.setProperty("--upload-progress", progress.toFixed(4));
-      percentage.textContent = `${Math.round(progress * 100)}%`;
-
-      if (elapsed < 1) {
-        window.requestAnimationFrame(updateProgress);
-      } else {
-        percentage.textContent = "100%";
-        window.setTimeout(() => {
-          element.classList.add("load-complete");
-          window.setTimeout(
-            () => element.querySelector(".card-upload-loader")?.remove(),
-            CARD_LOADER_REMOVAL_DELAY
-          );
-        }, CARD_LOAD_COMPLETE_DELAY);
-      }
-    };
-
-    window.requestAnimationFrame(updateProgress);
-  }, delay);
-};
-
-const prepareTypingReveal = (element) => {
-  if (element.dataset.typingPrepared === "true") {
-    return Array.from(element.querySelectorAll(".section-typing-char"));
-  }
-
-  const textTargets = element.matches(".about-text")
-    ? element.querySelectorAll(".section-label, .section-title, p")
-    : element.querySelectorAll(".section-label, .section-title, .section-desc");
-
-  const characters = [];
-
-  textTargets.forEach((target) => {
-    const text = target.textContent.replace(/\s+/g, " ").trim();
-
-    if (!text) {
-      return;
-    }
-
-    target.setAttribute("aria-label", text);
-    target.textContent = "";
-
-    const typingLine = document.createElement("span");
-
-    Array.from(text).forEach((character) => {
-      const characterElement = document.createElement("span");
-      characterElement.className = "section-typing-char";
-      characterElement.setAttribute("aria-hidden", "true");
-      characterElement.textContent = character;
-      typingLine.appendChild(characterElement);
-      characters.push(characterElement);
-    });
-
-    target.appendChild(typingLine);
-  });
-
-  element.dataset.typingPrepared = "true";
-  return characters;
-};
-
-const startTypingReveal = (element) => {
-  if (element.dataset.typingStarted === "true") {
-    return;
-  }
-
-  element.dataset.typingStarted = "true";
-
-  if (reducedMotionQuery.matches) {
-    return;
-  }
-
-  const characters = prepareTypingReveal(element);
-
-  if (!characters.length) {
-    return;
-  }
-
-  const caret = document.createElement("span");
-  caret.className = "typing-caret section-typing-caret";
-  caret.setAttribute("aria-hidden", "true");
-  caret.textContent = "|";
-  characters[0].before(caret);
-
-  const batchSize = Math.max(1, Math.ceil(characters.length / 170));
-  let characterIndex = 0;
-
-  const typeCharacterBatch = () => {
-    const batchEnd = Math.min(characterIndex + batchSize, characters.length);
-
-    while (characterIndex < batchEnd) {
-      characters[characterIndex].classList.add("is-typed");
-      characterIndex += 1;
-    }
-
-    characters[characterIndex - 1].after(caret);
-
-    if (characterIndex < characters.length) {
-      window.setTimeout(typeCharacterBatch, 14);
-    } else {
-      element.classList.add("typing-finished");
-      window.setTimeout(() => caret.remove(), 320);
-    }
-  };
-
-  window.setTimeout(typeCharacterBatch, 90);
-};
-
-const revealElements = Array.from(document.querySelectorAll(".reveal"));
-
-revealElements.forEach((element) => {
-  if (element.matches(cardRevealSelector)) {
-    element.classList.add("reveal-card");
-    createCardLoader(element);
-  } else {
-    element.classList.add("reveal-text");
-
-    if (!reducedMotionQuery.matches) {
-      prepareTypingReveal(element);
-    }
-  }
+$("[data-theme-toggle]")?.addEventListener("click", () => {
+  const next = currentTheme() === "dark" ? "light" : "dark";
+  root.classList.add("theme-anim");
+  root.dataset.theme = next;
+  storage.set("localStorage", "theme", next);
+  syncThemeMeta();
+  window.setTimeout(() => root.classList.remove("theme-anim"), 500);
 });
+syncThemeMeta();
 
-const showRevealElement = (element) => {
-  if (element.classList.contains("reveal-text")) {
-    startTypingReveal(element);
-  } else {
-    startCardLoading(element);
-  }
-};
+/* ---------- Títulos divididos em palavras ---------- */
+const splitWords = (element) => {
+  let index = 0;
 
-if ("IntersectionObserver" in window) {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        showRevealElement(entry.target);
-        observer.unobserve(entry.target);
-      }
-    });
-  }, {
-    threshold: 0.01,
-    rootMargin: "0px 0px -4% 0px"
-  });
-
-  revealElements.forEach((element) => {
-    observer.observe(element);
-  });
-
-  window.setTimeout(() => {
-    revealElements.forEach((element) => {
-      const bounds = element.getBoundingClientRect();
-      const isInsideViewport = bounds.top < window.innerHeight && bounds.bottom > 0;
-
-      if (isInsideViewport) {
-        showRevealElement(element);
-        observer.unobserve(element);
-      }
-    });
-  }, 600);
-} else {
-  revealElements.forEach((element) => {
-    showRevealElement(element);
-  });
-}
-
-const finePointerQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
-const skillCards = Array.from(document.querySelectorAll(".skill-card"));
-const projectGrid = document.querySelector(".projects-grid");
-const projectCards = Array.from(document.querySelectorAll(".project-card"));
-const skillPreviewStops = new Map();
-const projectReadyTimers = new Map();
-let activeProjectCard = null;
-let projectPreviewToken = 0;
-let mediaVisibilityToken = 0;
-
-const resetVideo = (video) => {
-  if (!video) {
-    return;
-  }
-
-  video.pause();
-
-  try {
-    video.currentTime = 0;
-  } catch {
-    // The metadata may not be available yet; playback will still restart when loaded.
-  }
-};
-
-const deactivateProjectPreview = (card = activeProjectCard) => {
-  const isActiveTarget = !card || card === activeProjectCard;
-
-  if (isActiveTarget) {
-    projectPreviewToken += 1;
-  }
-
-  if (card) {
-    card.classList.remove("is-active-preview");
-    resetVideo(card.querySelector(".project-preview"));
-  }
-
-  if (isActiveTarget) {
-    activeProjectCard = null;
-    projectGrid?.classList.remove("has-active-preview");
-  }
-};
-
-const activateProjectPreview = (card) => {
-  if (!projectGrid || !card.classList.contains("load-complete")) {
-    return;
-  }
-
-  if (activeProjectCard && activeProjectCard !== card) {
-    deactivateProjectPreview(activeProjectCard);
-  }
-
-  activeProjectCard = card;
-  const token = ++projectPreviewToken;
-  const visibilityToken = mediaVisibilityToken;
-  const video = card.querySelector(".project-preview");
-
-  if (!video) {
-    card.classList.add("is-active-preview");
-    projectGrid.classList.add("has-active-preview");
-    return;
-  }
-
-  resetVideo(video);
-  const playRequest = video.play();
-
-  const showPlayingProject = () => {
-    if (
-      token !== projectPreviewToken
-      || visibilityToken !== mediaVisibilityToken
-      || activeProjectCard !== card
-    ) {
-      resetVideo(video);
-      return;
-    }
-
-    card.classList.add("is-active-preview");
-    projectGrid.classList.add("has-active-preview");
-  };
-
-  if (playRequest instanceof Promise) {
-    playRequest
-      .then(showPlayingProject)
-      .catch(() => {
-        if (token === projectPreviewToken && activeProjectCard === card) {
-          deactivateProjectPreview(card);
-        }
-      });
-  } else {
-    showPlayingProject();
-  }
-};
-
-const wantsProjectPreview = (card) => (
-  card.matches(":hover")
-  || card.contains(document.activeElement)
-);
-
-const requestProjectPreview = (card) => {
-  if (card.classList.contains("load-complete")) {
-    activateProjectPreview(card);
-    return;
-  }
-
-  if (projectReadyTimers.has(card)) {
-    return;
-  }
-
-  const waitForCard = () => {
-    projectReadyTimers.delete(card);
-
-    if (!wantsProjectPreview(card)) {
-      return;
-    }
-
-    if (card.classList.contains("load-complete")) {
-      activateProjectPreview(card);
-      return;
-    }
-
-    projectReadyTimers.set(card, window.setTimeout(waitForCard, 120));
-  };
-
-  projectReadyTimers.set(card, window.setTimeout(waitForCard, 120));
-};
-
-if (!reducedMotionQuery.matches && finePointerQuery.matches) {
-  skillCards.forEach((card) => {
-    const video = card.querySelector(".skill-preview");
-    let previewToken = 0;
-    let readyTimer = null;
-    let wantsPreview = false;
-
-    if (!video) {
-      return;
-    }
-
-    const stopSkillPreview = () => {
-      wantsPreview = false;
-      previewToken += 1;
-      window.clearTimeout(readyTimer);
-      readyTimer = null;
-      card.classList.remove("is-previewing");
-      resetVideo(video);
-    };
-
-    const startSkillPreview = () => {
-      wantsPreview = true;
-
-      if (!card.classList.contains("load-complete")) {
-        if (!readyTimer) {
-          readyTimer = window.setTimeout(() => {
-            readyTimer = null;
-
-            if (wantsPreview && card.matches(":hover")) {
-              startSkillPreview();
-            }
-          }, 120);
-        }
-
+  const walk = (node) => {
+    Array.from(node.childNodes).forEach((child) => {
+      if (child.nodeType === Node.ELEMENT_NODE) {
+        walk(child);
         return;
       }
 
-      const token = ++previewToken;
-      const visibilityToken = mediaVisibilityToken;
-      resetVideo(video);
-      const playRequest = video.play();
+      if (child.nodeType !== Node.TEXT_NODE) return;
 
-      if (playRequest instanceof Promise) {
-        playRequest
-          .then(() => {
-            if (
-              wantsPreview
-              && token === previewToken
-              && visibilityToken === mediaVisibilityToken
-            ) {
-              card.classList.add("is-previewing");
-            } else {
-              resetVideo(video);
-            }
-          })
-          .catch(() => {
-            card.classList.remove("is-previewing");
-          });
-      } else {
-        card.classList.add("is-previewing");
-      }
-    };
+      const fragment = document.createDocumentFragment();
+      child.textContent.split(/(\s+)/).forEach((part) => {
+        if (!part) return;
 
-    skillPreviewStops.set(card, stopSkillPreview);
-    card.addEventListener("pointerenter", startSkillPreview);
-    card.addEventListener("pointerleave", stopSkillPreview);
-  });
-
-  projectCards.forEach((card) => {
-    card.addEventListener("pointerenter", () => requestProjectPreview(card));
-    card.addEventListener("pointerleave", () => {
-      if (!card.contains(document.activeElement)) {
-        deactivateProjectPreview(card);
-      }
-    });
-  });
-}
-
-if (!reducedMotionQuery.matches) {
-  projectCards.forEach((card) => {
-    card.addEventListener("focusin", () => requestProjectPreview(card));
-    card.addEventListener("focusout", (event) => {
-      if (!card.contains(event.relatedTarget) && !card.matches(":hover")) {
-        deactivateProjectPreview(card);
-      }
-    });
-  });
-
-  if ("IntersectionObserver" in window) {
-    const mediaVisibilityObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
+        if (/^\s+$/.test(part)) {
+          fragment.append(" ");
           return;
         }
 
-        skillPreviewStops.get(entry.target)?.();
-
-        if (activeProjectCard === entry.target) {
-          deactivateProjectPreview(entry.target);
-        }
+        const word = document.createElement("span");
+        const inner = document.createElement("span");
+        word.className = "w";
+        inner.textContent = part;
+        inner.style.setProperty("--i", index++);
+        word.append(inner);
+        fragment.append(word);
       });
-    }, { threshold: .05 });
 
-    [...skillCards, ...projectCards].forEach((card) => {
-      mediaVisibilityObserver.observe(card);
+      child.replaceWith(fragment);
     });
-  }
-}
-
-const aboutTiltSurface = document.querySelector("[data-about-tilt]");
-
-if (aboutTiltSurface && !reducedMotionQuery.matches && desktop3DTiltQuery.matches) {
-  let aboutTiltFrame = null;
-
-  const resetAboutTilt = () => {
-    if (aboutTiltFrame) {
-      window.cancelAnimationFrame(aboutTiltFrame);
-      aboutTiltFrame = null;
-    }
-
-    aboutTiltSurface.classList.remove("is-tilting");
-    aboutTiltSurface.style.setProperty("--about-tilt-x", "0deg");
-    aboutTiltSurface.style.setProperty("--about-tilt-y", "0deg");
-    aboutTiltSurface.style.setProperty("--about-tilt-scale", "1");
-    aboutTiltSurface.style.setProperty("--about-shadow-x", "0px");
-    aboutTiltSurface.style.setProperty("--about-shadow-y", "0px");
-    aboutTiltSurface.style.setProperty("--about-shadow-solid", "rgba(61,63,61,0)");
-    aboutTiltSurface.style.setProperty("--about-shadow-soft", "rgba(70,72,70,0)");
   };
 
-  aboutTiltSurface.addEventListener("pointerenter", () => {
-    aboutTiltSurface.classList.add("is-tilting");
-  });
+  element.normalize();
+  walk(element);
+};
 
-  aboutTiltSurface.addEventListener("pointermove", (event) => {
-    aboutTiltSurface.classList.add("is-tilting");
-    const bounds = aboutTiltSurface.getBoundingClientRect();
-    const horizontalPosition = (event.clientX - bounds.left) / bounds.width - .5;
-    const verticalPosition = (event.clientY - bounds.top) / bounds.height - .5;
+if (!reducedMotion) {
+  $$("[data-split]").forEach(splitWords);
+}
 
-    if (aboutTiltFrame) {
-      window.cancelAnimationFrame(aboutTiltFrame);
+/* ---------- Texto "decodificado" nos rótulos mono ---------- */
+const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/<>_-";
+
+const scrambleText = (textNode, duration = 700) => {
+  const finalText = textNode.textContent;
+  const startedAt = performance.now();
+
+  const frame = (now) => {
+    const progress = clamp((now - startedAt) / duration, 0, 1);
+    const revealed = Math.floor(progress * finalText.length);
+    let output = finalText.slice(0, revealed);
+
+    for (let i = revealed; i < finalText.length; i++) {
+      output += /\s/.test(finalText[i]) ? finalText[i] : GLYPHS[(Math.random() * GLYPHS.length) | 0];
     }
 
-    aboutTiltFrame = window.requestAnimationFrame(() => {
-      aboutTiltFrame = null;
-      aboutTiltSurface.style.setProperty("--about-tilt-x", `${verticalPosition * -5}deg`);
-      aboutTiltSurface.style.setProperty("--about-tilt-y", `${horizontalPosition * 6}deg`);
-      aboutTiltSurface.style.setProperty("--about-tilt-scale", "1.008");
-      aboutTiltSurface.style.setProperty("--about-shadow-x", `${horizontalPosition * -20}px`);
-      aboutTiltSurface.style.setProperty("--about-shadow-y", `${17 + verticalPosition * 7}px`);
-      aboutTiltSurface.style.setProperty("--about-shadow-solid", "rgba(61,63,61,.44)");
-      aboutTiltSurface.style.setProperty("--about-shadow-soft", "rgba(70,72,70,.2)");
+    textNode.textContent = output;
+    if (progress < 1) window.requestAnimationFrame(frame);
+    else textNode.textContent = finalText;
+  };
+
+  window.requestAnimationFrame(frame);
+};
+
+const scrambleLabel = (element) => {
+  if (reducedMotion) return;
+  const textNode = Array.from(element.childNodes).reverse().find((node) => node.nodeType === Node.TEXT_NODE && node.textContent.trim());
+  if (textNode) scrambleText(textNode);
+};
+
+/* ---------- Reveal no scroll ---------- */
+const revealTargets = $$("[data-reveal], [data-split]:not(.hero-title)");
+
+const revealElement = (element, delay = 0) => {
+  element.style.setProperty("--rd", `${delay}ms`);
+  element.classList.add("is-in");
+  if (element.classList.contains("section-index")) {
+    window.setTimeout(() => scrambleLabel(element), delay);
+  }
+};
+
+if ("IntersectionObserver" in window && !reducedMotion) {
+  const revealObserver = new IntersectionObserver((entries) => {
+    let order = 0;
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      revealElement(entry.target, Math.min(order++, 6) * 90);
+      revealObserver.unobserve(entry.target);
+    });
+  }, { rootMargin: "0px 0px -8% 0px", threshold: .12 });
+
+  revealTargets.forEach((element) => revealObserver.observe(element));
+} else {
+  revealTargets.forEach((element) => element.classList.add("is-in"));
+}
+
+/* ---------- Intro ---------- */
+const intro = $(".intro");
+
+const setReady = () => root.classList.add("is-ready");
+
+const runIntro = () => {
+  const bar = $("[data-intro-bar]");
+  const duration = 1250;
+  const startedAt = performance.now();
+  const fontsReady = Promise.race([
+    document.fonts?.ready ?? Promise.resolve(),
+    new Promise((resolve) => window.setTimeout(resolve, 2400))
+  ]);
+
+  const finish = () => {
+    intro.classList.add("is-done");
+    storage.set("sessionStorage", "intro-seen", "1");
+    window.setTimeout(setReady, 280);
+    window.setTimeout(() => intro.remove(), 1300);
+  };
+
+  const tick = (now) => {
+    const progress = clamp((now - startedAt) / duration, 0, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    bar.parentElement.style.setProperty("--p", eased.toFixed(3));
+    bar.style.setProperty("--p", eased.toFixed(3));
+
+    if (progress < 1) window.requestAnimationFrame(tick);
+    else fontsReady.then(finish);
+  };
+
+  window.requestAnimationFrame(tick);
+};
+
+if (!intro || reducedMotion || root.classList.contains("intro-skip")) {
+  intro?.remove();
+  window.setTimeout(setReady, 40);
+} else {
+  runIntro();
+}
+
+/* ---------- Navegação: estado, seção ativa, indicador ---------- */
+const nav = $("[data-nav]");
+const navList = $("[data-nav-links]");
+const navIndicator = $(".nav-indicator");
+const navLinks = $$("[data-nav-links] a");
+const menuLinks = $$(".menu-links a");
+const railLinks = $$("[data-rail-link]");
+const rail = $("[data-rail]");
+const sections = $$("[data-section]");
+let lastScrollY = window.scrollY;
+let activeSectionId = null;
+let menuIsOpen = false;
+
+const moveIndicator = (link) => {
+  if (!navList || !navIndicator) return;
+
+  if (!link || link.offsetParent === null) {
+    navList.classList.remove("has-active");
+    return;
+  }
+
+  navIndicator.style.setProperty("--x", `${link.offsetLeft}px`);
+  navIndicator.style.setProperty("--w", `${link.offsetWidth}px`);
+  navList.classList.add("has-active");
+};
+
+const setActiveSection = (id) => {
+  if (id === activeSectionId) return;
+  activeSectionId = id;
+
+  [...navLinks, ...menuLinks, ...railLinks].forEach((link) => {
+    const isActive = link.getAttribute("href") === `#${id}`;
+    link.classList.toggle("is-active", isActive);
+    if (isActive) link.setAttribute("aria-current", "location");
+    else link.removeAttribute("aria-current");
+  });
+
+  moveIndicator(navLinks.find((link) => link.classList.contains("is-active")));
+};
+
+const updateRailPositions = () => {
+  if (!rail) return;
+  const maxScroll = Math.max(root.scrollHeight - window.innerHeight, 1);
+
+  railLinks.forEach((link) => {
+    const section = $(link.getAttribute("href"));
+    if (!section) return;
+    const position = clamp(section.offsetTop / maxScroll, 0, 1);
+    link.style.setProperty("--pos", position.toFixed(4));
+  });
+};
+
+let scrollFrame = null;
+
+const onScroll = () => {
+  scrollFrame = null;
+  const y = window.scrollY;
+  const delta = y - lastScrollY;
+
+  nav?.classList.toggle("is-scrolled", y > 24);
+
+  if (Math.abs(delta) > 6 && !menuIsOpen) {
+    const hide = delta > 0 && y > window.innerHeight * .6 && !nav?.matches(":focus-within");
+    nav?.classList.toggle("is-hidden", hide);
+    lastScrollY = y;
+  }
+
+  const marker = y + window.innerHeight * .4;
+  let current = sections[0]?.id ?? null;
+  sections.forEach((section) => {
+    if (section.offsetTop <= marker) current = section.id;
+  });
+  if (y + window.innerHeight >= root.scrollHeight - 4) current = sections.at(-1)?.id ?? current;
+  setActiveSection(current);
+
+  if (rail) {
+    const maxScroll = Math.max(root.scrollHeight - window.innerHeight, 1);
+    rail.style.setProperty("--p", clamp(y / maxScroll, 0, 1).toFixed(4));
+  }
+};
+
+const queueScroll = () => {
+  if (!scrollFrame) scrollFrame = window.requestAnimationFrame(onScroll);
+};
+
+window.addEventListener("scroll", queueScroll, { passive: true });
+window.addEventListener("resize", () => {
+  updateRailPositions();
+  moveIndicator(navLinks.find((link) => link.classList.contains("is-active")));
+  queueScroll();
+});
+window.addEventListener("load", () => { updateRailPositions(); queueScroll(); });
+if ("ResizeObserver" in window) new ResizeObserver(updateRailPositions).observe(document.body);
+updateRailPositions();
+onScroll();
+window.requestAnimationFrame(() => navIndicator?.classList.add("is-ready"));
+
+/* ---------- Menu mobile ---------- */
+const menu = $("#menu");
+const menuOpenButton = $("[data-menu-open]");
+
+const openMenu = () => {
+  if (!menu || menuIsOpen) return;
+  menuIsOpen = true;
+  menu.showModal();
+  root.style.overflow = "hidden";
+  menuOpenButton?.setAttribute("aria-expanded", "true");
+  window.requestAnimationFrame(() => menu.classList.add("is-open"));
+};
+
+const closeMenu = ({ immediate = false } = {}) => {
+  if (!menu || !menuIsOpen) return;
+  menuIsOpen = false;
+  menu.classList.remove("is-open");
+  root.style.overflow = "";
+  menuOpenButton?.setAttribute("aria-expanded", "false");
+
+  if (immediate || reducedMotion) menu.close();
+  else window.setTimeout(() => menu.close(), 320);
+};
+
+menuOpenButton?.addEventListener("click", openMenu);
+$("[data-menu-close]")?.addEventListener("click", () => closeMenu());
+menu?.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeMenu();
+});
+
+menuLinks.forEach((link) => {
+  link.addEventListener("click", (event) => {
+    const target = $(link.getAttribute("href"));
+    if (!target) return;
+    event.preventDefault();
+    closeMenu({ immediate: true });
+    target.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" });
+    history.replaceState(null, "", link.getAttribute("href"));
+  });
+});
+
+compactQuery.addEventListener("change", (event) => {
+  if (!event.matches) closeMenu({ immediate: true });
+});
+
+/* ---------- Hero: luz que segue o cursor, tilt e botões magnéticos ---------- */
+const hero = $(".hero");
+const heroSpot = $("[data-hero-spot]");
+
+if (hero && heroSpot && finePointer && !reducedMotion) {
+  hero.addEventListener("pointermove", (event) => {
+    const bounds = hero.getBoundingClientRect();
+    heroSpot.style.setProperty("--sx", `${event.clientX - bounds.left}px`);
+    heroSpot.style.setProperty("--sy", `${event.clientY - bounds.top}px`);
+  });
+}
+
+const tiltCard = $("[data-tilt]");
+
+if (tiltCard && finePointer && !reducedMotion) {
+  let tiltFrame = null;
+
+  tiltCard.addEventListener("pointermove", (event) => {
+    const bounds = tiltCard.getBoundingClientRect();
+    const x = (event.clientX - bounds.left) / bounds.width;
+    const y = (event.clientY - bounds.top) / bounds.height;
+
+    window.cancelAnimationFrame(tiltFrame);
+    tiltFrame = window.requestAnimationFrame(() => {
+      tiltCard.classList.add("is-tilting");
+      tiltCard.style.setProperty("--rx", `${(.5 - y) * 7}deg`);
+      tiltCard.style.setProperty("--ry", `${(x - .5) * 9}deg`);
+      tiltCard.style.setProperty("--gx", `${x * 100}%`);
+      tiltCard.style.setProperty("--gy", `${y * 100}%`);
     });
   });
 
-  aboutTiltSurface.addEventListener("pointerleave", resetAboutTilt);
-  aboutTiltSurface.addEventListener("pointercancel", resetAboutTilt);
-  window.addEventListener("blur", resetAboutTilt);
+  tiltCard.addEventListener("pointerleave", () => {
+    window.cancelAnimationFrame(tiltFrame);
+    tiltCard.classList.remove("is-tilting");
+    tiltCard.style.setProperty("--rx", "0deg");
+    tiltCard.style.setProperty("--ry", "0deg");
+  });
 }
 
-const aboutCard = document.querySelector(".about-card");
-const codeTerminal = document.querySelector("[data-code-terminal]");
-const aboutCodeSamples = [
-  `@RestController
+if (finePointer && !reducedMotion) {
+  $$("[data-magnetic]").forEach((element) => {
+    element.addEventListener("pointermove", (event) => {
+      const bounds = element.getBoundingClientRect();
+      const dx = event.clientX - (bounds.left + bounds.width / 2);
+      const dy = event.clientY - (bounds.top + bounds.height / 2);
+      element.style.transform = `translate(${dx * .18}px, ${dy * .3}px)`;
+    });
+
+    element.addEventListener("pointerleave", () => { element.style.transform = ""; });
+  });
+}
+
+/* ---------- Chip de requisições da API ---------- */
+const apiChip = $(".api-chip");
+const apiRequests = [
+  ["GET", "/api/projects", "200 OK", "38ms"],
+  ["POST", "/api/auth/login", "200 OK", "112ms"],
+  ["GET", "/api/services?active=true", "200 OK", "24ms"],
+  ["PUT", "/api/schedule/42", "204 No Content", "57ms"],
+  ["POST", "/api/contact", "201 Created", "89ms"]
+];
+
+if (apiChip && !reducedMotion) {
+  const fields = ["[data-api-method]", "[data-api-path]", "[data-api-status]", "[data-api-time]"].map((selector) => $(selector, apiChip));
+  let requestIndex = 0;
+  let heroVisible = true;
+
+  if ("IntersectionObserver" in window && hero) {
+    new IntersectionObserver(([entry]) => { heroVisible = entry.isIntersecting; }).observe(hero);
+  }
+
+  window.setInterval(() => {
+    if (!heroVisible || document.hidden) return;
+    requestIndex = (requestIndex + 1) % apiRequests.length;
+    apiChip.classList.add("is-swapping");
+
+    window.setTimeout(() => {
+      apiRequests[requestIndex].forEach((value, i) => { if (fields[i]) fields[i].textContent = value; });
+      apiChip.classList.remove("is-swapping");
+    }, 300);
+  }, 2800);
+}
+
+/* ---------- Faixa de tecnologias ---------- */
+const marqueeTrack = $(".marquee-track");
+
+if (marqueeTrack) {
+  const list = $(".marquee-list", marqueeTrack);
+  const clone = list.cloneNode(true);
+  clone.setAttribute("aria-hidden", "true");
+  marqueeTrack.append(clone);
+}
+
+/* ---------- Pausa global de mídia ---------- */
+const resetVideo = (video) => {
+  if (!video) return;
+  video.pause();
+  try { video.currentTime = 0; } catch { /* metadados ainda não carregados */ }
+};
+
+const playVideo = (video) => {
+  if (!video || reducedMotion) return Promise.resolve(false);
+  const request = video.play();
+  return request instanceof Promise ? request.then(() => true).catch(() => false) : Promise.resolve(true);
+};
+
+/* ---------- 01 · Especialidades ---------- */
+const skillsRoot = $("[data-skills]");
+
+if (skillsRoot) {
+  const skills = $$(".skill", skillsRoot);
+  const stageFrame = $(".stage-frame", skillsRoot);
+  const stageVideos = $$(".stage-video", skillsRoot);
+  const stageProgress = $("[data-stage-progress]", skillsRoot);
+  let activeSkill = 0;
+  let stageVisible = false;
+  let progressFrame = null;
+
+  const currentVideo = () => compactQuery.matches
+    ? $(".skill-media-inline", skills[activeSkill])
+    : stageVideos[activeSkill];
+
+  const allVideos = () => [...stageVideos, ...$$(".skill-media-inline", skillsRoot)];
+
+  const trackProgress = () => {
+    const video = currentVideo();
+    const progress = video && video.duration ? video.currentTime / video.duration : 0;
+    skills[activeSkill]?.style.setProperty("--p", progress.toFixed(4));
+    stageProgress?.style.setProperty("--p", progress.toFixed(4));
+    progressFrame = window.requestAnimationFrame(trackProgress);
+  };
+
+  const syncPlayback = () => {
+    const video = currentVideo();
+    allVideos().forEach((candidate) => { if (candidate !== video) candidate.pause(); });
+
+    const shouldPlay = stageVisible && !document.hidden && !reducedMotion;
+    if (!video || !shouldPlay) {
+      video?.pause();
+      window.cancelAnimationFrame(progressFrame);
+      return;
+    }
+
+    playVideo(video);
+    window.cancelAnimationFrame(progressFrame);
+    progressFrame = window.requestAnimationFrame(trackProgress);
+  };
+
+  const setSkill = (index) => {
+    if (index === activeSkill && skills[index].classList.contains("is-active")) return;
+    const previous = currentVideo();
+    activeSkill = index;
+
+    skills.forEach((skill, i) => {
+      skill.classList.toggle("is-active", i === index);
+      if (i !== index) skill.style.setProperty("--p", 0);
+    });
+    stageVideos.forEach((video, i) => video.classList.toggle("is-active", i === index));
+    resetVideo(previous);
+
+
+    syncPlayback();
+  };
+
+  skills.forEach((skill, index) => {
+    skill.addEventListener("focus", () => setSkill(index));
+    if (finePointer) skill.addEventListener("pointerenter", () => setSkill(index));
+  });
+
+  if ("IntersectionObserver" in window) {
+    const centerObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) setSkill(skills.indexOf(entry.target));
+      });
+    }, { rootMargin: "-46% 0px -46% 0px" });
+    skills.forEach((skill) => centerObserver.observe(skill));
+
+    new IntersectionObserver(([entry]) => {
+      stageVisible = entry.isIntersecting;
+      syncPlayback();
+    }, { threshold: .2 }).observe(skillsRoot);
+  }
+
+  compactQuery.addEventListener("change", () => {
+    allVideos().forEach(resetVideo);
+    syncPlayback();
+  });
+  document.addEventListener("visibilitychange", syncPlayback);
+}
+
+/* ---------- 02 · Projetos: prévia em vídeo e cursor ---------- */
+const projectVideos = $$(".project-video");
+const visibleProjectVideos = new Set();
+
+if (!reducedMotion && "IntersectionObserver" in window) {
+  const projectObserver = new IntersectionObserver((entries) => {
+    entries.forEach(({ target, isIntersecting }) => {
+      if (isIntersecting) {
+        visibleProjectVideos.add(target);
+        if (!document.hidden) playVideo(target);
+      } else {
+        visibleProjectVideos.delete(target);
+        target.pause();
+      }
+    });
+  }, { threshold: .35 });
+
+  projectVideos.forEach((video) => projectObserver.observe(video));
+
+  document.addEventListener("visibilitychange", () => {
+    projectVideos.forEach((video) => {
+      if (document.hidden) video.pause();
+      else if (visibleProjectVideos.has(video)) playVideo(video);
+    });
+  });
+}
+
+const cursorLabel = $("[data-cursor-label]");
+
+if (cursorLabel && finePointer && !reducedMotion) {
+  const cursorText = $("[data-cursor-text]", cursorLabel);
+  const target = { x: 0, y: 0 };
+  const position = { x: 0, y: 0 };
+  let following = false;
+  let cursorFrame = null;
+
+  const render = () => {
+    position.x += (target.x - position.x) * .2;
+    position.y += (target.y - position.y) * .2;
+    cursorLabel.style.transform = `translate3d(${position.x}px, ${position.y}px, 0) translate(-50%, -50%)`;
+
+    if (following || Math.abs(target.x - position.x) > .5 || Math.abs(target.y - position.y) > .5) {
+      cursorFrame = window.requestAnimationFrame(render);
+    } else {
+      cursorFrame = null;
+    }
+  };
+
+  window.addEventListener("pointermove", (event) => {
+    target.x = event.clientX;
+    target.y = event.clientY;
+    if (!cursorFrame && following) cursorFrame = window.requestAnimationFrame(render);
+  }, { passive: true });
+
+  $$("[data-cursor]").forEach((element) => {
+    element.addEventListener("pointerenter", (event) => {
+      cursorText.textContent = element.dataset.cursor;
+      target.x = position.x = event.clientX;
+      target.y = position.y = event.clientY;
+      following = true;
+      root.classList.add("has-cursor-label");
+      cursorLabel.classList.add("is-visible");
+      if (!cursorFrame) cursorFrame = window.requestAnimationFrame(render);
+    });
+
+    element.addEventListener("pointerleave", () => {
+      following = false;
+      root.classList.remove("has-cursor-label");
+      cursorLabel.classList.remove("is-visible");
+    });
+  });
+}
+
+/* ---------- 03 · IDE com digitação e syntax highlight ---------- */
+const ideRoot = $("[data-ide]");
+
+const codeSamples = [
+  {
+    lang: "Java",
+    code: `@RestController
 @RequestMapping("/api/projects")
 class ProjectController {
   @GetMapping
   List<Project> list() {
     return service.findAll();
   }
-}`,
-  `@Service
+}`
+  },
+  {
+    lang: "Java",
+    code: `@Service
 class PortfolioService {
   Project publish(Project input) {
     validate(input);
     return repository.save(input);
   }
-}`,
-  `SELECT title, stack, status
+}`
+  },
+  {
+    lang: "SQL",
+    code: `-- projetos em destaque
+SELECT title, stack, status
 FROM projects
 WHERE featured = true
-ORDER BY updated_at DESC;`,
-  `fetch("/api/contact", {
+ORDER BY updated_at DESC;`
+  },
+  {
+    lang: "JavaScript",
+    code: `await fetch("/api/contact", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify(message)
 });`
+  }
 ];
 
-if (aboutCard && codeTerminal) {
-  if (reducedMotionQuery.matches) {
-    codeTerminal.textContent = aboutCodeSamples[0];
-  } else {
-    let sampleIndex = 0;
-    let characterIndex = 0;
-    let typingDirection = 1;
-    let phase = "typing";
-    let typingTimer = null;
-    let isAboutVisible = false;
-    let isAboutReady = aboutCard.classList.contains("load-complete");
+const KEYWORDS = {
+  Java: new Set(["class", "public", "private", "return", "new", "void", "final", "static", "if", "else", "throws", "extends", "implements"]),
+  SQL: new Set(["SELECT", "FROM", "WHERE", "ORDER", "BY", "DESC", "ASC", "AND", "OR", "JOIN", "ON", "LIMIT", "true", "false"]),
+  JavaScript: new Set(["const", "let", "await", "async", "return", "new", "function", "true", "false", "if", "else"])
+};
 
-    const canTypeCode = () => (
-      isAboutVisible
-      && isAboutReady
-      && !document.hidden
-    );
+const tokenize = ({ lang, code }) => {
+  const pattern = /(\/\/.*|--.*)|("(?:[^"\\]|\\.)*")|(@\w+)|(\b\d+\b)|([A-Za-z_]\w*)|([{}()[\];,.<>=:])|(\s+|.)/g;
+  const tokens = [];
+  let match;
 
-    const scheduleCodeTick = (delay) => {
-      window.clearTimeout(typingTimer);
-      typingTimer = window.setTimeout(typeCodeTick, delay);
-    };
+  while ((match = pattern.exec(code))) {
+    const [text, comment, string, annotation, number, word, punctuation] = match;
+    let type = "";
 
-    const typeCodeTick = () => {
-      typingTimer = null;
-
-      if (!canTypeCode()) {
-        return;
-      }
-
-      const sample = aboutCodeSamples[sampleIndex];
-
-      if (phase === "typing") {
-        characterIndex = Math.min(characterIndex + typingDirection, sample.length);
-        codeTerminal.textContent = sample.slice(0, characterIndex);
-
-        if (characterIndex >= sample.length) {
-          phase = "holding";
-          scheduleCodeTick(1100);
-        } else {
-          const character = sample[characterIndex - 1];
-          scheduleCodeTick(character === "\n" ? 70 : /[{},;]/.test(character) ? 42 : 20);
-        }
-      } else if (phase === "holding") {
-        phase = "erasing";
-        scheduleCodeTick(20);
-      } else {
-        characterIndex = Math.max(characterIndex - 3, 0);
-        codeTerminal.textContent = sample.slice(0, characterIndex);
-
-        if (characterIndex === 0) {
-          sampleIndex = (sampleIndex + 1) % aboutCodeSamples.length;
-          phase = "typing";
-          scheduleCodeTick(320);
-        } else {
-          scheduleCodeTick(10);
-        }
-      }
-    };
-
-    const syncCodeTyping = () => {
-      if (canTypeCode() && !typingTimer) {
-        scheduleCodeTick(120);
-      } else if (!canTypeCode()) {
-        window.clearTimeout(typingTimer);
-        typingTimer = null;
-      }
-    };
-
-    if ("IntersectionObserver" in window) {
-      const codeVisibilityObserver = new IntersectionObserver((entries) => {
-        isAboutVisible = entries[0]?.isIntersecting ?? false;
-        syncCodeTyping();
-      }, { threshold: .18 });
-
-      codeVisibilityObserver.observe(aboutCard);
-    } else {
-      isAboutVisible = true;
+    if (comment) type = "com";
+    else if (string) type = "str";
+    else if (annotation) type = "ann";
+    else if (number) type = "num";
+    else if (punctuation) type = "pun";
+    else if (word) {
+      const nextChar = code[pattern.lastIndex];
+      if (KEYWORDS[lang].has(word)) type = "kw";
+      else if (/^[A-Z]/.test(word) && lang !== "SQL") type = "type";
+      else if (nextChar === "(") type = "fn";
     }
 
-    if (!isAboutReady && "MutationObserver" in window) {
-      const cardReadyObserver = new MutationObserver(() => {
-        if (aboutCard.classList.contains("load-complete")) {
-          isAboutReady = true;
-          cardReadyObserver.disconnect();
-          syncCodeTyping();
-        }
-      });
-
-      cardReadyObserver.observe(aboutCard, { attributes: true, attributeFilter: ["class"] });
-    } else if (!isAboutReady) {
-      const cardReadyPoll = window.setInterval(() => {
-        if (aboutCard.classList.contains("load-complete")) {
-          isAboutReady = true;
-          window.clearInterval(cardReadyPoll);
-          syncCodeTyping();
-        }
-      }, 160);
-    }
-
-    syncCodeTyping();
-    document.addEventListener("visibilitychange", syncCodeTyping);
+    tokens.push({ text, type });
   }
+
+  return tokens;
+};
+
+const escapeHtml = (text) => text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+if (ideRoot) {
+  const codeElement = $("[data-ide-code]", ideRoot);
+  const gutter = $("[data-ide-gutter]", ideRoot);
+  const langLabel = $("[data-ide-lang]", ideRoot);
+  const tabs = $$("[data-ide-tab]", ideRoot);
+  const tokenized = codeSamples.map(tokenize);
+  let sampleIndex = 0;
+  let typed = 0;
+  let timer = null;
+  let ideVisible = false;
+  let hovering = false;
+
+  const render = (count, showCaret = true) => {
+    let remaining = count;
+    let html = "";
+
+    for (const token of tokenized[sampleIndex]) {
+      if (remaining <= 0) break;
+      const text = token.text.slice(0, remaining);
+      remaining -= text.length;
+      html += token.type ? `<span class="tk-${token.type}">${escapeHtml(text)}</span>` : escapeHtml(text);
+    }
+
+    codeElement.innerHTML = html + (showCaret ? '<span class="ide-caret"></span>' : "");
+  };
+
+  const selectSample = (index) => {
+    sampleIndex = index;
+    typed = 0;
+    const sample = codeSamples[index];
+    gutter.textContent = sample.code.split("\n").map((_, i) => i + 1).join("\n");
+    if (langLabel) langLabel.textContent = sample.lang;
+
+    tabs.forEach((tab, i) => {
+      const isActive = i === index;
+      tab.classList.toggle("is-active", isActive);
+      tab.setAttribute("aria-selected", String(isActive));
+      tab.tabIndex = isActive ? 0 : -1;
+    });
+  };
+
+  const step = () => {
+    timer = null;
+    if (!ideVisible || document.hidden) return;
+
+    const sample = codeSamples[sampleIndex].code;
+
+    if (typed < sample.length) {
+      typed += 1;
+      render(typed);
+      const char = sample[typed - 1];
+      timer = window.setTimeout(step, char === "\n" ? 110 : /[{};,(]/.test(char) ? 55 : 22 + Math.random() * 18);
+    } else {
+      timer = window.setTimeout(() => {
+        if (hovering) { timer = window.setTimeout(step, 600); return; }
+        selectSample((sampleIndex + 1) % codeSamples.length);
+        render(0);
+        timer = window.setTimeout(step, 350);
+      }, 2600);
+    }
+  };
+
+  const sync = () => {
+    if (reducedMotion) return;
+    if (ideVisible && !document.hidden && !timer) timer = window.setTimeout(step, 250);
+    if ((!ideVisible || document.hidden) && timer) { window.clearTimeout(timer); timer = null; }
+  };
+
+  selectSample(0);
+
+  if (reducedMotion) {
+    render(codeSamples[0].code.length, false);
+  } else {
+    render(0);
+  }
+
+  tabs.forEach((tab, index) => {
+    tab.addEventListener("click", () => {
+      window.clearTimeout(timer);
+      timer = null;
+      selectSample(index);
+      if (reducedMotion) render(codeSamples[index].code.length, false);
+      else { render(0); sync(); }
+    });
+
+    tab.addEventListener("keydown", (event) => {
+      if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
+      event.preventDefault();
+      const next = (index + (event.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length;
+      tabs[next].focus();
+      tabs[next].click();
+    });
+  });
+
+  ideRoot.addEventListener("pointerenter", () => { hovering = true; });
+  ideRoot.addEventListener("pointerleave", () => { hovering = false; });
+
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(([entry]) => {
+      ideVisible = entry.isIntersecting;
+      sync();
+    }, { threshold: .25 }).observe(ideRoot);
+  } else {
+    ideVisible = true;
+    sync();
+  }
+
+  document.addEventListener("visibilitychange", sync);
 }
 
-const contactLinks = Array.from(document.querySelectorAll("[data-contact-message]"));
-const CONTACT_PREVIEW_TYPING_DURATION = 900;
-const CONTACT_PREVIEW_HOLD_DURATION = 2200;
+/* ---------- Toast ---------- */
+const toast = $("[data-toast]");
+let toastTimer = null;
 
-if (!reducedMotionQuery.matches) {
-  contactLinks.forEach((link) => {
-    const previewText = link.querySelector("[data-contact-preview-text]");
-    const message = link.dataset.contactMessage || "";
-    let animationFrame = null;
-    let holdTimer = null;
-    let clearTimer = null;
-    let previewLocked = false;
+const showToast = (message) => {
+  if (!toast) return;
+  toast.innerHTML = `<svg aria-hidden="true"><use href="#i-check"/></svg><span></span>`;
+  $("span", toast).textContent = message;
+  toast.classList.add("is-visible");
+  window.clearTimeout(toastTimer);
+  toastTimer = window.setTimeout(() => toast.classList.remove("is-visible"), 2600);
+};
 
-    if (!previewText || !message) {
+/* ---------- 04 · Contato: copiar email ---------- */
+$$("[data-copy]").forEach((button) => {
+  button.addEventListener("click", async () => {
+    const value = button.dataset.copy;
+
+    try {
+      await navigator.clipboard.writeText(value);
+    } catch {
+      const helper = document.createElement("textarea");
+      helper.value = value;
+      helper.setAttribute("readonly", "");
+      helper.style.position = "fixed";
+      helper.style.opacity = "0";
+      document.body.append(helper);
+      helper.select();
+      document.execCommand("copy");
+      helper.remove();
+    }
+
+    showToast("Email copiado para a área de transferência");
+  });
+});
+
+/* ---------- 04 · Contato: formulário ---------- */
+const form = $("#contactForm");
+
+if (form) {
+  const submitButton = $("#contactSubmit");
+  const submitLabel = $(".btn-label", submitButton);
+  const status = $("#formStatus");
+  const counter = $("[data-count]", form);
+  const message = $("#message", form);
+  const touched = new Set();
+
+  const rules = {
+    name: (value) => value.trim().length >= 2 || "Informe seu nome.",
+    email: (value) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value.trim()) || "Informe um email válido.",
+    message: (value) => value.trim().length >= 10 || "Escreva pelo menos 10 caracteres."
+  };
+
+  const validateField = (field) => {
+    const rule = rules[field.name];
+    if (!rule) return true;
+    const result = rule(field.value);
+    const error = $(`#${field.id}-error`, form);
+    const isValid = result === true;
+
+    field.setAttribute("aria-invalid", String(!isValid));
+    if (error) error.textContent = isValid ? "" : result;
+    return isValid;
+  };
+
+  Object.keys(rules).forEach((name) => {
+    const field = form.elements[name];
+
+    field.addEventListener("blur", () => {
+      if (field.value) touched.add(name);
+      if (touched.has(name)) validateField(field);
+    });
+
+    field.addEventListener("input", () => {
+      if (touched.has(name)) validateField(field);
+    });
+  });
+
+  message?.addEventListener("input", () => {
+    if (counter) counter.textContent = message.value.length;
+  });
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    status.className = "form-status";
+    status.textContent = "";
+
+    const fields = Object.keys(rules).map((name) => form.elements[name]);
+    fields.forEach((field) => touched.add(field.name));
+    const results = fields.map(validateField);
+    const firstInvalid = fields[results.indexOf(false)];
+
+    if (firstInvalid) {
+      firstInvalid.focus();
       return;
     }
 
-    const stopContactPreview = ({ unlock = false, clearImmediately = false } = {}) => {
-      window.cancelAnimationFrame(animationFrame);
-      window.clearTimeout(holdTimer);
-      window.clearTimeout(clearTimer);
-      animationFrame = null;
-      holdTimer = null;
-      link.classList.remove("is-previewing");
+    if (form.elements._honey?.value) {
+      form.reset();
+      return;
+    }
 
-      if (clearImmediately) {
-        previewText.textContent = "";
-      } else {
-        clearTimer = window.setTimeout(() => {
-          previewText.textContent = "";
-          clearTimer = null;
-        }, 260);
-      }
+    submitButton.classList.add("is-loading");
+    submitButton.disabled = true;
 
-      if (unlock) {
-        previewLocked = false;
-      }
-    };
-
-    const startContactPreview = () => {
-      if (previewLocked) {
-        return;
-      }
-
-      previewLocked = true;
-      window.clearTimeout(clearTimer);
-      previewText.textContent = "";
-      link.classList.add("is-previewing");
-      const startedAt = performance.now();
-
-      const animateMessage = (timestamp) => {
-        const progress = Math.min(
-          (timestamp - startedAt) / CONTACT_PREVIEW_TYPING_DURATION,
-          1
-        );
-        const easedProgress = 1 - Math.pow(1 - progress, 3);
-        const visibleCharacters = Math.max(1, Math.round(message.length * easedProgress));
-        previewText.textContent = message.slice(0, visibleCharacters);
-
-        if (progress < 1) {
-          animationFrame = window.requestAnimationFrame(animateMessage);
-        } else {
-          animationFrame = null;
-          holdTimer = window.setTimeout(() => {
-            stopContactPreview();
-          }, CONTACT_PREVIEW_HOLD_DURATION);
-        }
-      };
-
-      animationFrame = window.requestAnimationFrame(animateMessage);
-    };
-
-    if (finePointerQuery.matches) {
-      link.addEventListener("pointerenter", startContactPreview);
-      link.addEventListener("pointerleave", () => {
-        stopContactPreview({ unlock: true, clearImmediately: true });
+    try {
+      const response = await fetch("https://formsubmit.co/ajax/emanoelcandidolima@gmail.com", {
+        method: "POST",
+        headers: { Accept: "application/json" },
+        body: new FormData(form)
       });
-    }
 
-    link.addEventListener("focus", startContactPreview);
-    link.addEventListener("blur", () => {
-      stopContactPreview({ unlock: true, clearImmediately: true });
-    });
+      if (!response.ok) throw new Error("Falha no envio");
+
+      form.reset();
+      touched.clear();
+      if (counter) counter.textContent = "0";
+      fields.forEach((field) => field.removeAttribute("aria-invalid"));
+      submitButton.classList.add("is-success");
+      submitLabel.textContent = "Mensagem enviada";
+      status.classList.add("is-success");
+      status.textContent = "Obrigado! Responderei assim que possível.";
+
+      window.setTimeout(() => {
+        submitButton.classList.remove("is-success");
+        submitLabel.textContent = "Enviar mensagem";
+      }, 4000);
+    } catch {
+      status.classList.add("is-error");
+      status.textContent = "Não foi possível enviar. Verifique sua conexão ou use o email direto.";
+    } finally {
+      submitButton.classList.remove("is-loading");
+      submitButton.disabled = false;
+    }
   });
 }
 
-document.addEventListener("visibilitychange", () => {
-  if (!document.hidden) {
-    return;
-  }
+/* ---------- Foto ampliada ---------- */
+const lightbox = $("#photoLightbox");
+const lightboxOpener = $("[data-lightbox-open]");
 
-  mediaVisibilityToken += 1;
-  skillPreviewStops.forEach((stopPreview) => stopPreview());
-  projectReadyTimers.forEach((timer) => {
-    window.clearTimeout(timer);
-  });
-  projectReadyTimers.clear();
-
-  deactivateProjectPreview();
-  projectCards.forEach((card) => {
-    resetVideo(card.querySelector(".project-preview"));
-  });
-});
-
-const scrollRuler = document.querySelector(".scroll-ruler");
-const scrollRulerMarker = document.querySelector(".scroll-ruler-marker");
-const pageFooter = document.querySelector("footer");
-let scrollRulerFrame = null;
-
-const updateScrollRuler = () => {
-  if (!scrollRuler || !scrollRulerMarker) {
-    scrollRulerFrame = null;
-    return;
-  }
-
-  const pageHeight = document.documentElement.scrollHeight;
-  const maxScroll = Math.max(pageHeight - window.innerHeight, 0);
-  const progress = maxScroll > 0
-    ? Math.min(Math.max(window.scrollY / maxScroll, 0), 1)
-    : 0;
-  const markerTravel = Math.max(scrollRuler.clientHeight - scrollRulerMarker.offsetHeight, 0);
-  const rulerTop = scrollRuler.getBoundingClientRect().top;
-  const footerLimit = pageFooter
-    ? Math.max(pageFooter.getBoundingClientRect().top - rulerTop - scrollRulerMarker.offsetHeight, 0)
-    : markerTravel;
-  const markerPosition = Math.min(progress * markerTravel, markerTravel, footerLimit);
-
-  scrollRulerMarker.style.transform = `translate3d(0, ${markerPosition}px, 0)`;
-  scrollRulerFrame = null;
+const closeLightbox = () => {
+  if (!lightbox?.open) return;
+  lightbox.classList.remove("is-open");
+  window.setTimeout(() => lightbox.close(), reducedMotion ? 0 : 300);
 };
 
-const queueScrollRulerUpdate = () => {
-  if (!scrollRulerFrame) {
-    scrollRulerFrame = window.requestAnimationFrame(updateScrollRuler);
-  }
-};
-
-window.addEventListener("scroll", queueScrollRulerUpdate, { passive: true });
-window.addEventListener("resize", queueScrollRulerUpdate);
-window.addEventListener("load", queueScrollRulerUpdate);
-
-if ("ResizeObserver" in window) {
-  const pageResizeObserver = new ResizeObserver(queueScrollRulerUpdate);
-  pageResizeObserver.observe(document.documentElement);
-}
-
-queueScrollRulerUpdate();
-
-const navList = document.querySelector(".nav-links");
-const navLinks = Array.from(document.querySelectorAll('.nav-links a[href^="#"]'));
-const mobileMenuLinks = Array.from(document.querySelectorAll('.mobile-menu-links a[href^="#"]'));
-const navSections = navLinks
-  .map((link) => document.querySelector(link.getAttribute("href")))
-  .filter(Boolean);
-
-let activeNavFrame = null;
-
-const updateNavIndicator = (activeLink) => {
-  const canShowIndicator = activeLink
-    && !activeLink.classList.contains("nav-cta")
-    && activeLink.offsetParent !== null;
-
-  if (!navList || !canShowIndicator) {
-    navList?.classList.remove("has-active-indicator");
-    return;
-  }
-
-  const navListRect = navList.getBoundingClientRect();
-  const activeLinkRect = activeLink.getBoundingClientRect();
-  const indicatorX = activeLinkRect.left - navListRect.left;
-
-  navList.style.setProperty("--active-indicator-x", `${indicatorX}px`);
-  navList.style.setProperty("--active-indicator-width", `${activeLinkRect.width}px`);
-  navList.classList.add("has-active-indicator");
-};
-
-const updateActiveNav = () => {
-  const marker = window.scrollY + window.innerHeight * 0.34;
-  const atPageEnd = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 4;
-  let activeSectionId = null;
-  let activeDesktopLink = null;
-
-  navSections.forEach((section) => {
-    if (section.offsetTop <= marker) {
-      activeSectionId = section.id;
-    }
-  });
-
-  if (atPageEnd && navSections.length) {
-    activeSectionId = navSections.at(-1).id;
-  }
-
-  [...navLinks, ...mobileMenuLinks].forEach((link) => {
-    const isActive = link.getAttribute("href") === `#${activeSectionId}`;
-    link.classList.toggle("active", isActive);
-
-    if (isActive) {
-      link.setAttribute("aria-current", "page");
-      if (navLinks.includes(link)) {
-        activeDesktopLink = link;
-      }
-    } else {
-      link.removeAttribute("aria-current");
-    }
-  });
-
-  updateNavIndicator(activeDesktopLink);
-  activeNavFrame = null;
-};
-
-window.addEventListener("scroll", () => {
-  if (!activeNavFrame) {
-    activeNavFrame = window.requestAnimationFrame(updateActiveNav);
-  }
-}, { passive: true });
-
-window.addEventListener("resize", updateActiveNav);
-updateActiveNav();
-window.requestAnimationFrame(() => navList?.classList.add("indicator-ready"));
-
-const menuToggle = document.querySelector(".menu-toggle");
-const mobileMenu = document.getElementById("mobileMenu");
-const mobileMenuClose = document.querySelector(".mobile-menu-close");
-let menuLastFocused = null;
-
-const setMobileMenu = (isOpen, restoreFocus = true) => {
-  if (!menuToggle || !mobileMenu) {
-    return;
-  }
-
-  if (isOpen) {
-    menuLastFocused = document.activeElement;
-  }
-
-  document.body.classList.toggle("menu-open", isOpen);
-  menuToggle.setAttribute("aria-expanded", String(isOpen));
-  mobileMenu.setAttribute("aria-hidden", String(!isOpen));
-  mobileMenu.inert = !isOpen;
-
-  if (isOpen) {
-    window.setTimeout(() => mobileMenuClose?.focus(), 0);
-  } else if (restoreFocus && menuLastFocused instanceof HTMLElement) {
-    menuLastFocused.focus();
-  }
-};
-
-menuToggle?.addEventListener("click", () => {
-  setMobileMenu(!document.body.classList.contains("menu-open"));
+lightboxOpener?.addEventListener("click", () => {
+  if (!lightbox) return;
+  lightbox.showModal();
+  window.requestAnimationFrame(() => lightbox.classList.add("is-open"));
 });
 
-document.querySelectorAll("[data-menu-close]").forEach((control) => {
-  control.addEventListener("click", () => setMobileMenu(false));
+$("[data-lightbox-close]")?.addEventListener("click", closeLightbox);
+lightbox?.addEventListener("click", (event) => { if (event.target === lightbox) closeLightbox(); });
+lightbox?.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeLightbox();
 });
+lightbox?.addEventListener("close", () => lightboxOpener?.focus());
 
-mobileMenuLinks.forEach((link) => {
-  link.addEventListener("click", () => setMobileMenu(false, false));
-});
+/* ---------- Ajustes após o carregamento das fontes ---------- */
+document.fonts?.ready.then(updateRailPositions);
 
-document.addEventListener("keydown", (event) => {
-  if (!document.body.classList.contains("menu-open")) {
-    return;
-  }
-
-  if (event.key === "Escape") {
-    setMobileMenu(false);
-    return;
-  }
-
-  if (event.key === "Tab" && mobileMenu) {
-    const focusable = Array.from(mobileMenu.querySelectorAll("a, button:not([disabled])"));
-    const first = focusable[0];
-    const last = focusable.at(-1);
-
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last?.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first?.focus();
-    }
-  }
-});
-
-window.matchMedia("(min-width: 651px)").addEventListener("change", (event) => {
-  if (event.matches && document.body.classList.contains("menu-open")) {
-    setMobileMenu(false, false);
-  }
-});
-
-const isInstagramBrowser = /Instagram/i.test(navigator.userAgent);
-
-if (isInstagramBrowser) {
-  document.querySelectorAll('a[target="_blank"]').forEach((link) => {
+/* ---------- Navegador interno do Instagram ---------- */
+if (/Instagram/i.test(navigator.userAgent)) {
+  $$('a[target="_blank"]').forEach((link) => {
     link.removeAttribute("target");
     link.removeAttribute("rel");
   });
 }
-
-const profilePhotoLink = document.querySelector("[data-profile-photo]");
-const profilePhotoLightbox = document.getElementById("profilePhotoLightbox");
-const profilePhotoClose = profilePhotoLightbox?.querySelector(".photo-lightbox-close");
-
-const setProfilePhotoOpen = (isOpen) => {
-  if (!profilePhotoLink || !profilePhotoLightbox) {
-    return;
-  }
-
-  document.body.classList.toggle("photo-view-open", isOpen);
-  profilePhotoLightbox.setAttribute("aria-hidden", String(!isOpen));
-  profilePhotoLightbox.inert = !isOpen;
-
-  if (isOpen) {
-    profilePhotoClose?.focus();
-  } else {
-    profilePhotoLink.focus();
-  }
-};
-
-profilePhotoLink?.addEventListener("click", (event) => {
-  event.preventDefault();
-  setProfilePhotoOpen(true);
-});
-
-profilePhotoClose?.addEventListener("click", () => {
-  setProfilePhotoOpen(false);
-});
-
-profilePhotoLightbox?.addEventListener("click", (event) => {
-  if (event.target === profilePhotoLightbox) {
-    setProfilePhotoOpen(false);
-  }
-});
-
-document.addEventListener("keydown", (event) => {
-  if (!document.body.classList.contains("photo-view-open")) {
-    return;
-  }
-
-  if (event.key === "Escape") {
-    setProfilePhotoOpen(false);
-  } else if (event.key === "Tab") {
-    event.preventDefault();
-    profilePhotoClose?.focus();
-  }
-});
-
-document.getElementById("contactForm").addEventListener("submit", async (event) => {
-  event.preventDefault();
-
-  const form = event.currentTarget;
-  const submitButton = document.getElementById("contactSubmit");
-  const formStatus = document.getElementById("formStatus");
-  const formData = new FormData(form);
-  const originalButtonContent = submitButton.innerHTML;
-
-  submitButton.disabled = true;
-  submitButton.textContent = "Enviando...";
-  formStatus.className = "form-status";
-  formStatus.textContent = "";
-
-  try {
-    const response = await fetch(
-      "https://formsubmit.co/ajax/emanoelcandidolima@gmail.com",
-      {
-        method: "POST",
-        headers: {
-          Accept: "application/json"
-        },
-        body: formData
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error("Não foi possível enviar a mensagem.");
-    }
-
-    form.reset();
-    formStatus.classList.add("success");
-    formStatus.textContent = "Mensagem enviada com sucesso!";
-  } catch {
-    formStatus.classList.add("error");
-    formStatus.textContent = "Não foi possível enviar. Verifique sua conexão e tente novamente.";
-  } finally {
-    submitButton.disabled = false;
-    submitButton.innerHTML = originalButtonContent;
-  }
-});
