@@ -1453,7 +1453,7 @@ a.badge-strong:hover { color: var(--bg); background: color-mix(in srgb, var(--in
 }
 .footer-cta a svg { width: .8em; height: .8em; transition: transform .45s var(--ease-out); }
 .footer-cta a:hover { color: var(--accent-ink); }
-.footer-cta a:hover svg { transform: translateX(6px); }
+.footer-cta a:hover svg { transform: translateY(-6px); }
 .footer-cols { display: flex; gap: clamp(40px, 6vw, 96px); }
 .footer-cols ul { margin-top: 16px; display: grid; gap: 8px; }
 .footer-cols a { color: var(--ink-2); transition: color .3s ease; }
