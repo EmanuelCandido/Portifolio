@@ -100,7 +100,7 @@ Ao substituir uma imagem, preserve nomes descritivos, dimensões adequadas e tex
 Estudante de Engenharia de Software — Teresina, Piauí, Brasil.
 
 - [GitHub](https://github.com/EmanuelCandido)
-- [LinkedIn](https://www.linkedin.com/in/emanuecandido)
+- [LinkedIn](https://www.linkedin.com/in/emanuelcandido)
 - [Instagram](https://www.instagram.com/_emanuel_1)
 
 ## Licença
