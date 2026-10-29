@@ -82,7 +82,7 @@ Ao substituir uma imagem, preserve nomes descritivos, dimensões adequadas e tex
 
 - **ClinicCase** ([GitHub](https://github.com/EmanuelCandido/ClinicCase) · [site](https://cliniccase.site)): plataforma educacional com IA generativa para criação de casos clínicos, desenvolvida no PIBIC (Java, Spring Boot, PostgreSQL, React e TypeScript).
 - **[Agendamento de Barbearia](https://github.com/EmanuelCandido/Sistema-de-barbeiro):** agendamento online pelo celular e painel administrativo, com React, TypeScript e Firebase.
-- **[Link na Bio — Personal Trainer](https://github.com/EmanuelCandido/Linktree):** página de links com serviços em destaque, tema claro/escuro e contato pelo WhatsApp.
+- **[Link na Bio — Personal Trainer](https://github.com/EmanuelCandido/link-na-bio):** página de links com serviços em destaque, tema claro/escuro e contato pelo WhatsApp.
 - **[Eco City](https://github.com/EmanuelCandido/Jogo_INOVATECH):** jogo educativo 3D no navegador sobre sustentabilidade.
 - **[TopNote](https://github.com/EmanuelCandido/TopNote):** aplicativo de notas para Windows aberto por atalho, com dados salvos localmente.
 
