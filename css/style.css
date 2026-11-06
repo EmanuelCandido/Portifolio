@@ -937,3 +937,5 @@ html { scrollbar-gutter: stable; }
   .badge-rig { --lh-ext: 0; }
   .lanyard-hand { aspect-ratio: 1040 / 1024; }
 }
+
+.contact-card-mail { cursor: copy; }

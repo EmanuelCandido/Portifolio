@@ -311,17 +311,28 @@
     toastTimer = setTimeout(() => toast.classList.remove("is-on"), 2400);
   };
 
-  /* Copiar email */
+  /* Copiar email (botão dos contatos e email do cartão): aviso "Email copiado" */
+  const copyText = async (text) => {
+    try {
+      if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(text); return true; }
+    } catch { /* cai no método alternativo */ }
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = text; ta.setAttribute("readonly", "");
+      ta.style.cssText = "position:fixed;top:0;left:0;opacity:0;pointer-events:none";
+      document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, text.length);
+      const ok = document.execCommand("copy");
+      ta.remove();
+      return ok;
+    } catch { return false; }
+  };
   document.querySelectorAll("[data-copy]").forEach((btn) => {
-    btn.addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText(btn.dataset.copy);
-        showToast("Email copiado");
-        const label = btn.querySelector("[data-copy-label]");
-        if (label) { label.textContent = "Copiado"; setTimeout(() => { label.textContent = "Copiar"; }, 2000); }
-      } catch {
-        showToast(btn.dataset.copy);
-      }
+    btn.addEventListener("click", async (e) => {
+      e.preventDefault(); // o email do cartão copia em vez de abrir o programa de email
+      const ok = await copyText(btn.dataset.copy);
+      showToast(ok ? "Email copiado" : `Copie manualmente: ${btn.dataset.copy}`);
+      const label = btn.querySelector("[data-copy-label]");
+      if (ok && label) { label.textContent = "Copiado"; setTimeout(() => { label.textContent = "Copiar"; }, 2000); }
     });
   });
 
