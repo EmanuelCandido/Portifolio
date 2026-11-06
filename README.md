@@ -1,108 +1,70 @@
-# Portfólio — Emanuel Cândido
+# Portfólio reimaginado — Emanuel Cândido
 
-Portfólio profissional desenvolvido para apresentar minha trajetória em Engenharia de Software, minhas competências técnicas e projetos que transformam necessidades reais em soluções digitais.
+Nova versão do portfólio com direção de arte de estúdio escuro: fundo preto com grade fina,
+navegação em pílula e uma pasta física como objeto central (inspirada na imagem em `assets/source/referencia.png`).
 
-O projeto combina uma identidade visual autoral com uma experiência responsiva e acessível. Toda a interface foi construída com HTML, CSS e JavaScript puros, mantendo a base de código leve, organizada e simples de evoluir.
-
-## Destaques
-
-- Identidade editorial com tipografia Geist e Geist Mono, grid de 12 colunas e paleta grafite com laranja de destaque.
-- Tema claro e escuro, seguindo o sistema por padrão e com alternância manual salva no navegador.
-- Introdução curta (exibida uma vez por sessão), títulos revelados palavra a palavra e conteúdos que entram durante a rolagem.
-- Régua lateral de progresso com marcação das seções e navegação com indicador animado da seção ativa.
-- Cartão de perfil com inclinação 3D, foto ampliável e chip animado de requisições de API.
-- Especialidades com vídeos autorais (fluxo de API, modelagem de dados, interface responsiva e grafo do Git) sincronizados à rolagem.
-- Projetos com prévias animadas que tocam ao entrar na tela e cursor contextual.
-- Janela de IDE na seção Sobre, com abas, digitação e destaque de sintaxe para Java, SQL e JavaScript.
-- Contato com cópia rápida do email, formulário com rótulos flutuantes, validação acessível e envio assíncrono.
-- Menu mobile em tela cheia e foto ampliada usando `<dialog>` nativo (foco e tecla Esc tratados pelo navegador).
-- Metadados de compartilhamento (Open Graph), dados estruturados (JSON-LD), favicon SVG e ícone para iOS.
-- Respeito à preferência de movimento reduzido e funcionamento sem JavaScript (conteúdo sempre visível).
-
-## Tecnologias
-
-- HTML5 semântico
-- CSS3 (custom properties, grid, `color-mix`, `:has`)
-- JavaScript puro, sem dependências
-- Google Fonts
-- SVG
-- Git e GitHub
-
-## Estrutura do projeto
+## Estrutura
 
 ```text
-Portifolio/
-├── assets/
-│   ├── documents/        # currículo em PDF
-│   ├── icons/            # favicon.svg
-│   ├── images/           # foto, capas dos projetos, og-cover e pôsteres dos vídeos
-│   └── videos/
-│       ├── projects/
-│       └── skills/
-├── css/
-│   └── style.css
-├── js/
-│   └── script.js
-├── index.html
-├── LICENSE
-└── README.md
+index.html            conteúdo e seções (Início, Portfólio, Sobre mim, Por que eu, Pesquisa, Contato)
+css/style.css         tokens, layout, pastas, animações e responsivo
+js/main.js            navegação ativa, revelações, vídeos, parallax, cópia de email e formulário
+assets/images/        imagens otimizadas (WebP + JPG) usadas pelo site
+assets/source/        PNGs originais gerados pelo Codex (gpt-6.1-sol) e a referência
+assets/projects/      pôsteres e prévias em vídeo dos projetos
+assets/documents/          currículo, artigos e banner em PDF
 ```
 
-## Execução local
+## Assets gerados
 
-O portfólio não exige instalação de dependências ou etapa de compilação.
+`hero-hand` e `contact-hand` foram gerados com o Codex (geração de imagem, gpt-6.1-sol) como
+recortes com fundo transparente, com a manga da camisa social branca e o tom de pele do
+dono do portfólio (usando a foto dele como referência): a mão segura a pasta/cartão em branco e a manga toca
+a borda da imagem. O texto da pasta e do cartão é HTML sobreposto.
 
-1. Clone o repositório:
+Como funciona o encaixe (em `css/style.css`):
 
-   ```bash
-   git clone https://github.com/EmanuelCandido/Portifolio.git
-   ```
+- A face da pasta é posicionada em coordenadas da tela (`--fw`, `--fx`, `--fy` em `.hero-stage`;
+  `--cw`, `--cx`, `--cy` em `.contact-stage`), com uma composição para telas deitadas e outra
+  para telas em pé (`@media (max-aspect-ratio: 1/1)`).
+- A imagem é escalada e deslocada para a face coincidir. Por isso o braço sempre passa da
+  borda da tela, em qualquer proporção.
+- `--hi-*` e `--ci-*` guardam onde está a face dentro de cada imagem. Se trocar uma imagem,
+  meça o retângulo da face e atualize esses valores.
 
-2. Entre na pasta do projeto:
+O crachá da seção Sobre mim é HTML/CSS (palavra "dev" gigante, foto recortada com contorno de luz,
+painel diagonal, nome e cargo). A foto é `emanuel-recorte.webp`: o fundo foi removido com um modelo de
+segmentação (rembg/BiRefNet) que gera só a máscara — os pixels da pessoa são os da foto original, sem
+regeneração nem upscaling por IA (verificado pixel a pixel). A mão que segura o cordão
+(`lanyard-hand.webp`) foi gerada pelo Codex; `lanyard-sleeve.webp` é uma fatia da manga esticada até a
+borda da tela. Cordão, mosquetão e cartão balançam como um pêndulo a partir do punho (`js/main.js`):
+dá para arrastar e arremessar.
 
-   ```bash
-   cd Portifolio
-   ```
+O fundo tem uma grade que acende só perto do cursor (camada mais clara revelada por máscara).
 
-3. Abra o arquivo `index.html` em um navegador moderno.
+Os ícones de seta estão em `assets/icons/arrows.svg` (sprite, também gerado pelo Codex; veja
+`assets/icons/arrow-preview.html`) e são usados com `<svg class="ico"><use href="assets/icons/arrows.svg#arrow-up-right"></use></svg>`.
 
-Para trabalhar com recarregamento automático, também é possível servir a pasta com uma extensão como Live Server.
+As pastas de projeto mostram um recorte 16:9 do vídeo e, ao passar o mouse (ou com foco
+pelo teclado), crescem até a proporção real do vídeo — só com o mouse sobre o vídeo. Em telas de toque ficam sempre abertas.
 
-## Personalização
+## Desempenho (celulares fracos e redes lentas)
 
-- `index.html`: conteúdo, links, projetos e o sprite de ícones SVG (no início do `<body>`).
-- `css/style.css`: tokens de design (cores dos dois temas, fontes, espaçamentos) no topo, seguidos de componentes, seções e animações.
-- `js/script.js`: tema, introdução, navegação, revelações, vídeos, IDE, formulário e diálogos.
-- `assets/images/`: imagens otimizadas em WebP/JPG; `og-cover.jpg` é a imagem de compartilhamento (1200×630).
-- `assets/videos/`: prévias locais, compactadas e sem áudio.
+- Um script no `<head>` marca a página com `save-data` (rede 2G/3G ou "economia de dados") e
+  `lite` (aparelho com até 4 GB de RAM ou 4 núcleos).
+- `save-data`: vídeos dos projetos não são baixados (só o pôster).
+- `lite`: sem `backdrop-filter`, sem balanços automáticos do crachá (só ao segurar) e efeitos de
+  luz mais simples.
+- Pôsteres dos vídeos carregam só quando a pasta se aproxima da tela; vídeos tocam só quando visíveis.
+- Imagens com `srcset` (640/1024/1536) e `loading="lazy"`; no celular a mão do crachá usa uma versão
+  sem a extensão de manga (≈4 MB decodificada em vez de ≈13 MB).
+- Animações infinitas pausam fora da tela; seções simples usam `content-visibility: auto`.
+- Em telas pequenas a navbar some ao rolar para baixo e volta ao rolar para cima.
 
-Ao substituir uma imagem, preserve nomes descritivos, dimensões adequadas e textos alternativos relevantes.
+## Rodar localmente
 
-## Projetos apresentados
+```bash
+python -m http.server 5517
+```
 
-- **ClinicCase** ([GitHub](https://github.com/EmanuelCandido/ClinicCase) · [site](https://cliniccase.site)): plataforma educacional com IA generativa para criação de casos clínicos, desenvolvida no PIBIC (Java, Spring Boot, PostgreSQL, React e TypeScript).
-- **[Agendamento de Barbearia](https://github.com/EmanuelCandido/Sistema-de-barbeiro):** agendamento online pelo celular e painel administrativo, com React, TypeScript e Firebase.
-- **[Link na Bio — Personal Trainer](https://github.com/EmanuelCandido/link-na-bio):** página de links com serviços em destaque, tema claro/escuro e contato pelo WhatsApp.
-- **[Eco City](https://github.com/EmanuelCandido/Jogo_INOVATECH):** jogo educativo 3D no navegador sobre sustentabilidade.
-- **[TopNote](https://github.com/EmanuelCandido/TopNote):** aplicativo de notas para Windows aberto por atalho, com dados salvos localmente.
-
-## Artigos e eventos
-
-- **DELTA SAÚDE 2026** — 5º Congresso Internacional de Estudantes e Profissionais da Saúde (painel eletrônico, com certificado, [banner](assets/documents/banner-delta-saude-2026.pdf)).
-- **Opala Tech V** — IFPI Pedro II, 1 a 3 de junho: artigo sobre a arquitetura LLM + RAG do ClinicCase (com certificado, [PDF](assets/documents/artigo-opala-tech-v.pdf)).
-- **PIBIC** — artigo sobre a plataforma ClinicCase ([PDF](assets/documents/artigo-pibic-clinic-case.pdf)).
-- **Git e GitHub na prática** — curso de extensão do Centro Universitário Santo Agostinho.
-
-## Autor
-
-**Emanuel Cândido**
-
-Estudante de Engenharia de Software — Teresina, Piauí, Brasil.
-
-- [GitHub](https://github.com/EmanuelCandido)
-- [LinkedIn](https://www.linkedin.com/in/emanuelcandidodasilvalima)
-- [Instagram](https://www.instagram.com/_emanuel_1)
-
-## Licença
-
-Este projeto é distribuído sob os termos definidos no arquivo [LICENSE](LICENSE).
+Depois abra http://localhost:5517.
