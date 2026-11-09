@@ -23,14 +23,16 @@
   <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png?v=2">
   <link rel="icon" href="assets/icons/favicon.ico?v=2" sizes="any">
   <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png?v=2">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
-  <link rel="stylesheet" href="css/style.css?v=50">
+  <link rel="preload" href="assets/fonts/hanken-grotesk.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/style.css?v=51">
   <script>
     (function () {
       var r = document.documentElement, c = navigator.connection || {};
       r.classList.add("js");
+      // Proteção: a classe "js" esconde os blocos até o main.js revelá-los. Se ele não
+      // rodar em 4 s (arquivo não chegou ou deu erro), tira a classe e mostra tudo sem animação.
+      setTimeout(function () { if (!r.classList.contains("js-ok")) r.classList.remove("js"); }, 4000);
       // rede lenta ou "economia de dados": não baixa vídeos e evita efeitos caros
       var slow = !!c.saveData || /(^|-)2g|3g/.test(c.effectiveType || "");
       // aparelho fraco: pouca memória ou poucos núcleos
@@ -501,6 +503,6 @@
   </footer>
 
   <div class="toast" role="status" aria-live="polite" data-toast></div>
-  <script src="js/main.js?v=51" defer></script>
+  <script src="js/main.js?v=52" defer onerror="document.documentElement.classList.remove('js')"></script>
 </body>
 </html>

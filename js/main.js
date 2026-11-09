@@ -20,8 +20,32 @@
   else {
     heroImg.addEventListener("load", markLoaded, { once: true });
     heroImg.addEventListener("error", markLoaded, { once: true });
-    setTimeout(markLoaded, 2500);
+    setTimeout(markLoaded, 1200); // não segura o hero por muito tempo em rede lenta
   }
+
+  /* Revelação ao rolar (com atraso escalonado entre irmãos) */
+  const reveals = document.querySelectorAll("[data-reveal]");
+  if (reduceMotion || !("IntersectionObserver" in window)) {
+    reveals.forEach((el) => el.classList.add("is-in"));
+  } else {
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const el = entry.target;
+          const siblings = [...el.parentElement.children].filter((c) => c.hasAttribute("data-reveal"));
+          el.style.setProperty("--d", `${Math.min(siblings.indexOf(el), 4) * 0.08}s`);
+          el.classList.add("is-in");
+          revealObserver.unobserve(el);
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -6% 0px" }
+    );
+    reveals.forEach((el) => revealObserver.observe(el));
+  }
+
+  /* Tudo que estava escondido já tem quem revele: desliga a proteção de 4 s do <head> */
+  root.classList.add("js-ok");
 
   /* Navegação: fundo ao rolar + indicador da seção ativa */
   const nav = document.querySelector("[data-nav]");
@@ -76,27 +100,6 @@
   document.fonts?.ready.then(() => moveIndicator(current));
   moveIndicator(current);
   window.addEventListener("resize", () => moveIndicator(current));
-
-  /* Revelação ao rolar (com atraso escalonado entre irmãos) */
-  const reveals = document.querySelectorAll("[data-reveal]");
-  if (reduceMotion || !("IntersectionObserver" in window)) {
-    reveals.forEach((el) => el.classList.add("is-in"));
-  } else {
-    const revealObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          const el = entry.target;
-          const siblings = [...el.parentElement.children].filter((c) => c.hasAttribute("data-reveal"));
-          el.style.setProperty("--d", `${Math.min(siblings.indexOf(el), 4) * 0.08}s`);
-          el.classList.add("is-in");
-          revealObserver.unobserve(el);
-        });
-      },
-      { threshold: 0.12, rootMargin: "0px 0px -6% 0px" }
-    );
-    reveals.forEach((el) => revealObserver.observe(el));
-  }
 
   /* Vídeos dos projetos: pôster só carrega quando a pasta se aproxima da tela */
   const videos = document.querySelectorAll(".folder-sheet video");

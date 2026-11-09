@@ -3,6 +3,12 @@
    Tema: estúdio escuro, grade fina, pasta como objeto central
    ========================================================= */
 
+/* Fontes hospedadas no próprio site (subconjunto latino, cobre o português; licença OFL):
+   Bricolage Grotesque nos títulos, Hanken Grotesk no texto, JetBrains Mono nos rótulos */
+@font-face { font-family: "Bricolage Grotesque"; src: url("../assets/fonts/bricolage-grotesque.woff2") format("woff2"); font-weight: 500 800; font-stretch: 100%; font-display: swap; }
+@font-face { font-family: "Hanken Grotesk"; src: url("../assets/fonts/hanken-grotesk.woff2") format("woff2"); font-weight: 300 700; font-display: swap; }
+@font-face { font-family: "JetBrains Mono"; src: url("../assets/fonts/jetbrains-mono.woff2") format("woff2"); font-weight: 400 500; font-display: swap; }
+
 :root {
   --bg: #0a0a0a;
   --bg-2: #111111;
@@ -16,8 +22,9 @@
   --text-2: #a3a3a3;
   --text-3: #6b6b6b;
 
-  --font: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --mono: "Geist Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+  --display: "Bricolage Grotesque", "Hanken Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font: "Hanken Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
 
   --grid: 132px;
   --radius: 22px;
@@ -224,9 +231,10 @@ h1, h2, h3, p { margin: 0; }
   white-space: nowrap;
 }
 .hero-card-title {
+  font-family: var(--display);
   margin-top: calc(var(--fw) * .04);
   font-size: calc(var(--fw) * .125);
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: -0.035em;
   line-height: 1;
 }
@@ -284,10 +292,11 @@ h1, h2, h3, p { margin: 0; }
   color: var(--text-3);
 }
 .section-title {
+  font-family: var(--display);
   font-size: clamp(38px, 6vw, 76px);
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1;
-  letter-spacing: -0.045em;
+  letter-spacing: -0.04em;
 }
 .dim { color: var(--text-3); }
 .section-lead { font-size: 17px; color: var(--text-2); max-width: 560px; }
@@ -404,7 +413,7 @@ h1, h2, h3, p { margin: 0; }
 }
 
 .folder-meta { display: flex; gap: 14px; font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); }
-.folder-title { font-size: clamp(24px, 2.6vw, 34px); font-weight: 600; letter-spacing: -0.03em; line-height: 1.05; }
+.folder-title { font-family: var(--display); font-size: clamp(24px, 2.6vw, 34px); font-weight: 600; letter-spacing: -0.03em; line-height: 1.05; }
 .folder-text { color: var(--text-2); font-size: 15px; }
 .folder-links { display: flex; flex-wrap: wrap; gap: 18px; font-size: 14px; }
 .folder-links a { color: var(--text); border-bottom: 1px solid var(--line-3); padding-bottom: 2px; transition: border-color .3s; }
@@ -533,6 +542,7 @@ h1, h2, h3, p { margin: 0; }
   background: radial-gradient(circle, #030303 0 42%, #8d8d8d 44%, #e2e2e2 52%, #6a6a6a 62%, #2a2a2a 70%, transparent 72%);
 }
 .badge-word {
+  font-family: var(--display);
   position: absolute; z-index: 0;
   left: 12cqw; top: 54%;
   transform: translate(-50%, -50%) rotate(-90deg);
@@ -558,7 +568,7 @@ h1, h2, h3, p { margin: 0; }
   display: grid; justify-items: end; gap: 2.4cqw;
   text-align: right;
 }
-.badge-name { display: grid; font-size: 7.4cqw; font-weight: 700; letter-spacing: -0.035em; line-height: 1.02; }
+.badge-name { font-family: var(--display); display: grid; font-size: 7.4cqw; font-weight: 700; letter-spacing: -0.035em; line-height: 1.02; }
 .badge-name span:first-child { color: #fff; }
 .badge-name span:last-child { color: #9b9b9b; }
 .badge-role {
@@ -585,6 +595,7 @@ h1, h2, h3, p { margin: 0; }
 .marquee-track { display: flex; width: max-content; animation: marquee 42s linear infinite; }
 .marquee ul { display: flex; }
 .marquee li {
+  font-family: var(--display);
   padding: 22px 28px;
   font-size: clamp(22px, 3vw, 36px);
   font-weight: 500;
@@ -620,7 +631,7 @@ h1, h2, h3, p { margin: 0; }
 }
 .why-card:hover::before { opacity: 1; }
 .why-num { font-family: var(--mono); font-size: 12px; color: var(--text-3); margin-bottom: 64px; }
-.why-card h3 { font-size: 24px; font-weight: 600; letter-spacing: -0.03em; }
+.why-card h3 { font-family: var(--display); font-size: 24px; font-weight: 600; letter-spacing: -0.03em; }
 .why-card p { color: var(--text-2); font-size: 15px; }
 .why-card .tags { margin-top: auto; padding-top: 8px; }
 
@@ -645,7 +656,7 @@ h1, h2, h3, p { margin: 0; }
 }
 .pub:hover { background: linear-gradient(90deg, rgba(255,255,255,0.03), transparent 70%); padding-left: 14px; }
 .pub-date { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); padding-top: 8px; }
-.pub-main h3 { font-size: clamp(22px, 2.4vw, 30px); font-weight: 600; letter-spacing: -0.03em; }
+.pub-main h3 { font-family: var(--display); font-size: clamp(22px, 2.4vw, 30px); font-weight: 600; letter-spacing: -0.03em; }
 .pub-main p { color: var(--text-2); font-size: 15px; margin-top: 6px; max-width: 640px; }
 .pub-links { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; padding-top: 6px; }
 .chip {
@@ -691,8 +702,8 @@ h1, h2, h3, p { margin: 0; }
 }
 .contact-card-label,
 .contact-card-foot { font-family: var(--mono); font-size: max(8px, calc(var(--cw) * .026)); letter-spacing: .08em; text-transform: uppercase; color: rgba(242,242,242,.5); }
-/* Email do cartão: usuário em Geist fina e grande (com leve brilho metálico),
-   domínio em Geist Mono espaçada, como impresso num cartão de visita */
+/* Email do cartão: usuário em Hanken Grotesk fina e grande (com leve brilho metálico),
+   domínio em JetBrains Mono espaçada, como impresso num cartão de visita */
 .contact-card-mail {
   display: grid; gap: calc(var(--cw) * .018);
   width: fit-content;
@@ -756,7 +767,7 @@ h1, h2, h3, p { margin: 0; }
   background: linear-gradient(90deg, rgba(255,255,255,.06), transparent 80%);
   opacity: 0; transition: opacity .4s var(--ease);
 }
-.channel-name { font-size: 20px; font-weight: 600; letter-spacing: -0.03em; }
+.channel-name { font-family: var(--display); font-size: 20px; font-weight: 600; letter-spacing: -0.03em; }
 .channel-handle { font-size: 14px; color: var(--text-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .channel-go { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-3); transition: color .3s; }
 .channel .ico { width: 22px; height: 22px; fill: none; stroke: currentColor; transition: transform .5s var(--ease); }

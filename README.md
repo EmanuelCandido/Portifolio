@@ -12,7 +12,8 @@ js/main.js            navegação ativa, revelações, vídeos, parallax, cópia
 assets/images/        imagens otimizadas (WebP + JPG) usadas pelo site
 assets/source/        PNGs originais gerados pelo Codex (gpt-6.1-sol) e a referência
 assets/projects/      pôsteres e prévias em vídeo dos projetos
-assets/documents/          currículo, artigos e banner em PDF
+assets/fonts/         fontes hospedadas no site (Bricolage Grotesque, Hanken Grotesk, JetBrains Mono)
+assets/documents/     currículo, artigos e banner em PDF
 ```
 
 ## Assets gerados
