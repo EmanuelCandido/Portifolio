@@ -225,88 +225,204 @@
     });
   });
 
-  /* Crachá pendurado: pêndulo com física simples.
-     - .badge-swing (alça + crachá) gira em torno da base do clipe (ângulo th)
-     - o crachá ainda gira um pouco em torno da fenda (ângulo ph), com atraso
-     Arraste para segurar; solte para lançar para qualquer lado. */
+  /* Crachá pendurado: cordão flexível + cartão 3D.
+     - O cordão é uma corrente de pontos (integração de Verlet) presa no punho: fica
+       esticado com o peso do cartão e dobra quando o cartão é levantado.
+     - Mosquetão e cartão são hastes rígidas no fim da corrente (ilhós → centro de massa).
+     - O cartão ainda gira em 3D: em torno do próprio eixo vertical (ry, mostra o verso)
+       e inclina para frente/trás (rx), com molas de torção.
+     Arraste para mover, solte em movimento para arremessar e girar, clique para virar.
+     Medidas em "unidades" = 1% da largura do conjunto (as mesmas em cqw do CSS). */
   const rig = document.querySelector("[data-badge]");
-  if (rig && !reduceMotion) {
-    const swing = rig.querySelector("[data-badge-swing]");
-    const card = rig.querySelector("[data-badge-card]");
-    const K = 9;      // gravidade / comprimento  (cordinha longa: período ≈ 2,1 s)
-    const C = 0.75;   // amortecimento do balanço
-    const KP = 120, CP = 8, LAG = 0.28; // mola e atraso do crachá na fenda
-    const LIMIT = 2.5; // rad — não deixa dar a volta completa
-    let th = 0, w = 0, ph = 0, wp = 0;
-    let dragging = false, grabA = 0, grabTh = 0, lastT = 0, lastTh = 0;
-    let raf = 0, prev = 0;
+  const cardEl = rig?.querySelector("[data-badge-card]");
+  const claspEl = rig?.querySelector(".lanyard-clasp");
+  if (rig && cardEl && claspEl && !reduceMotion) {
+    const PX = 50, PY = 40;                    // saída do cordão no punho (--pivot-y: 40cqw)
+    const N = 8, ROPE = 29, SEG = ROPE / N;    // cordão: 8 trechos
+    const CLASP = 26, BODY = 50;               // ponta do cordão → ilhós → centro do cartão
+    const REACH = ROPE + CLASP + BODY - 0.5;   // até onde o cartão alcança com o cordão esticado
+    const G = 950, DT = 1 / 120, DAMP = 1 - 0.8 * DT, ITER = 16;
+    const KS = 16, CS = 3.6;                   // mola e amortecimento do giro (ry)
+    const KX = 40, CX = 7;                     // idem para a inclinação (rx)
+    const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
-    const pivot = () => {
-      const r = rig.getBoundingClientRect();
-      return { x: r.left + r.width / 2, y: r.top + parseFloat(getComputedStyle(swing).marginTop) }; // pivô = saída do cordão no punho
+    const mk = (x, y, w) => ({ x, y, px: x, py: y, w }); // w = 1 / massa (0 = fixo)
+    const pts = [];
+    for (let i = 0; i <= N; i++) pts.push(mk(PX, PY + SEG * i, i ? 1 : 0));
+    const end = pts[N];
+    const eye = mk(PX, PY + ROPE + CLASP, 0.4);
+    const com = mk(PX, eye.y + BODY, 0.1);
+    pts.push(eye, com);
+    const links = [];
+    for (let i = 0; i < N; i++) links.push([pts[i], pts[i + 1], SEG]);
+    links.push([end, eye, CLASP], [eye, com, BODY]);
+    /* rigidez da fita: pontos alternados não chegam perto demais (evita dobra em quina);
+       o ponto fixo acima do punho faz o cordão sair da mão apontando para baixo */
+    const bends = [[{ x: PX, y: PY - SEG, w: 0 }, pts[1]]];
+    for (let i = 0; i <= N - 2; i++) bends.push([pts[i], pts[i + 2]]);
+
+    /* Cordão desenhado em SVG (o texto acompanha a curva) */
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("class", "lanyard-rope");
+    svg.setAttribute("aria-hidden", "true");
+    svg.innerHTML = '<path class="rope-edge"/><path class="rope-body" id="lanyard-rope-path"/>' +
+      '<text class="rope-text"><textPath href="#lanyard-rope-path" startOffset="42%">emanuel(dev)</textPath></text>';
+    rig.querySelector("[data-badge-swing]").before(svg);
+    const ropePaths = svg.querySelectorAll("path");
+    rig.classList.add("is-live");
+
+    let u = rig.clientWidth / 100 || 1;        // px por unidade
+    let ry = 0, wy = 0, rx = 0, wx = 0;        // giro 3D do cartão
+    let face = 0, faceLock = 0;                // lado em repouso (par = frente) e trava após o clique
+    let tiltY = 0, tiltX = 0, hoverY = 0, hoverX = 0;
+    let dragging = false, tx = com.x, ty = com.y, offX = 0, offY = 0, grabX = 0, grabY = 0;
+    let downX = 0, downY = 0, downT = 0, moved = false;
+    let raf = 0, last = 0, acc = 0, calm = 0;
+
+    const solve = (a, b, len, wa, wb, k) => {
+      const sum = wa + wb;
+      if (!sum) return;
+      const dx = b.x - a.x, dy = b.y - a.y;
+      const d = Math.hypot(dx, dy) || 0.0001;
+      const diff = ((d - len) / d) * k;
+      a.x += dx * diff * (wa / sum); a.y += dy * diff * (wa / sum);
+      b.x -= dx * diff * (wb / sum); b.y -= dy * diff * (wb / sum);
     };
-    const angleAt = (e) => {
-      const p = pivot();
-      return Math.atan2(e.clientX - p.x, e.clientY - p.y);
-    };
-    const render = () => {
-      swing.style.transform = `rotate(${th}rad)`;
-      card.style.transform = `rotate(${ph}rad)`;
-    };
-    const step = (dt) => {
-      const wBefore = w;
-      if (!dragging) {
-        w += (-K * Math.sin(th) - C * w) * dt;
-        th += w * dt;
-        if (Math.abs(th) > LIMIT) { th = Math.sign(th) * LIMIT; w *= -0.35; }
+
+    const step = () => {
+      for (const p of pts) {
+        if (!p.w || (dragging && p === com)) continue;
+        const vx = (p.x - p.px) * DAMP, vy = (p.y - p.py) * DAMP;
+        p.px = p.x; p.py = p.y;
+        p.x += vx; p.y += vy + G * DT * DT;
       }
-      const alpha = (w - wBefore) / dt;
-      wp += (-KP * Math.sin(ph) - CP * wp - alpha * LAG) * dt;
-      ph += wp * dt;
-      ph = Math.max(-0.6, Math.min(0.6, ph));
+      if (dragging) { // o cartão segue o ponteiro, sem passar do alcance do cordão
+        let dx = tx - PX, dy = ty - PY;
+        const d = Math.hypot(dx, dy);
+        if (d > REACH) { dx *= REACH / d; dy *= REACH / d; }
+        com.px = com.x; com.py = com.y;
+        com.x += (PX + dx - com.x) * 0.3; com.y += (PY + dy - com.y) * 0.3;
+      }
+      const wc = dragging ? 0 : com.w;
+      for (let it = 0; it < ITER; it++) {
+        for (const [a, b, len] of links) solve(a, b, len, a === com ? wc : a.w, b === com ? wc : b.w, 1);
+        for (const [a, b] of bends) {
+          if (Math.hypot(b.x - a.x, b.y - a.y) < 2 * SEG) solve(a, b, 2 * SEG, a.w, b.w, 0.25);
+        }
+        if (dragging) { // a mão segura o cartão mais ou menos em pé
+          eye.x += (com.x - eye.x) * 0.05; eye.y += (com.y - BODY - eye.y) * 0.05;
+        }
+      }
+      /* giro 3D */
+      const vx = (com.x - com.px) / DT, vy = (com.y - com.py) / DT;
+      tiltY = hoverY; tiltX = hoverX;
+      if (dragging) { tiltY = grabX * 0.3 + clamp(vx * 0.003, -0.6, 0.6); tiltX = -grabY * 0.12; }
+      tiltX += clamp(-vy * 0.0012, -0.3, 0.3);
+      if (!dragging && performance.now() > faceLock) face = Math.round(ry / Math.PI);
+      wy += (-KS * (ry - face * Math.PI - tiltY) - CS * wy + (dragging ? 0 : vx * 0.012)) * DT;
+      ry += wy * DT;
+      wx += (-KX * (rx - tiltX) - CX * wx) * DT;
+      rx += wx * DT;
     };
+
+    const f = (v) => (v * u).toFixed(1);
+    const render = () => {
+      // do mosquetão para o punho, para o texto ler de baixo para cima
+      let d = `M${f(end.x)} ${f(end.y)}L${f((end.x + pts[N - 1].x) / 2)} ${f((end.y + pts[N - 1].y) / 2)}`;
+      for (let i = N - 1; i >= 1; i--) {
+        const p = pts[i], q = pts[i - 1];
+        d += `Q${f(p.x)} ${f(p.y)} ${f((p.x + q.x) / 2)} ${f((p.y + q.y) / 2)}`;
+      }
+      d += `L${f(PX)} ${f(PY)}L${f(PX)} ${f(PY - 4)}`;
+      ropePaths.forEach((p) => p.setAttribute("d", d));
+
+      const ac = Math.atan2(end.x - eye.x, eye.y - end.y);
+      claspEl.style.transform = `translate(${f(end.x - PX)}px,${f(end.y - PY - ROPE)}px) rotate(${ac.toFixed(4)}rad)`;
+      const az = Math.atan2(eye.x - com.x, com.y - eye.y);
+      cardEl.style.transform =
+        `translate3d(${f(eye.x - PX)}px,${f(eye.y - PY - ROPE - CLASP)}px,0) perspective(${Math.round(u * 260)}px) ` +
+        `rotateZ(${az.toFixed(4)}rad) rotateX(${rx.toFixed(4)}rad) rotateY(${ry.toFixed(4)}rad)`;
+      if (!lite) {
+        cardEl.style.setProperty("--sheen", `${(50 + Math.sin(ry) * 70 + rx * 60).toFixed(1)}%`);
+        cardEl.style.setProperty("--sheen-o", clamp(Math.abs(Math.sin(ry)) * 1.6 + Math.abs(rx) * 2, 0, 1).toFixed(2));
+      }
+    };
+
     const tick = (t) => {
-      const dt = Math.min(0.05, (t - (prev || t)) / 1000) || 1 / 60;
-      prev = t;
-      const n = 4;
-      for (let i = 0; i < n; i++) step(dt / n);
+      acc += Math.min(0.05, (t - (last || t)) / 1000) || DT;
+      last = t;
+      let n = 0;
+      while (acc >= DT && n < 6) { step(); acc -= DT; n++; }
+      if (n === 6) acc = 0;
       render();
-      const resting = !dragging && Math.abs(th) < 0.0015 && Math.abs(w) < 0.002 && Math.abs(ph) < 0.001 && Math.abs(wp) < 0.002;
-      if (resting) { th = w = ph = wp = 0; render(); raf = 0; prev = 0; return; }
+      let motion = Math.abs(wy) + Math.abs(wx) + Math.abs(ry - face * Math.PI - tiltY) + Math.abs(rx - tiltX);
+      for (const p of pts) motion += Math.abs(p.x - p.px) + Math.abs(p.y - p.py);
+      calm = !dragging && motion < 0.004 ? calm + 1 : 0;
+      if (calm > 20) { raf = 0; last = 0; acc = 0; calm = 0; return; } // parado: desliga o laço
       raf = requestAnimationFrame(tick);
     };
     const wake = () => { if (!raf) raf = requestAnimationFrame(tick); };
-    const push = (dw) => { w = Math.max(-14, Math.min(14, w + dw)); wake(); };
-
-    card.addEventListener("pointerdown", (e) => {
-      if (e.button !== 0) return;
-      dragging = true;
-      card.classList.add("is-dragging");
-      card.setPointerCapture(e.pointerId);
-      grabA = angleAt(e); grabTh = th;
-      lastT = performance.now(); lastTh = th; w = 0;
-      wake();
-    });
-    card.addEventListener("pointermove", (e) => {
-      if (!dragging) return; // só reage enquanto estiver sendo segurado
-      let target = grabTh - (angleAt(e) - grabA);
-      target = Math.max(-LIMIT, Math.min(LIMIT, target));
-      const now = performance.now();
-      const dt = Math.max(0.008, (now - lastT) / 1000);
-      const v = (target - lastTh) / dt;
-      w = w * 0.5 + v * 0.5; // velocidade suavizada = força do arremesso
-      th = target; lastTh = target; lastT = now;
-    });
-    const release = () => {
-      if (!dragging) return;
-      dragging = false;
-      card.classList.remove("is-dragging");
-      if (performance.now() - lastT > 90) w *= 0.2; // segurou parado: solta sem lançar
-      w = Math.max(-14, Math.min(14, w));
+    /* empurrão lateral (unidades/s) no cartão */
+    const push = (v) => { com.px -= v * DT; eye.px -= v * DT * 0.5; wake(); };
+    const flip = () => {
+      face += 1;
+      faceLock = performance.now() + 900;
+      cardEl.setAttribute("aria-pressed", String(face % 2 !== 0));
       wake();
     };
-    card.addEventListener("pointerup", release);
-    card.addEventListener("pointercancel", release);
+
+    new ResizeObserver(() => { u = rig.clientWidth / 100 || 1; render(); }).observe(rig);
+
+    const toUnits = (e) => {
+      const r = rig.getBoundingClientRect();
+      return { x: (e.clientX - r.left) / u, y: (e.clientY - r.top) / u };
+    };
+    cardEl.addEventListener("pointerdown", (e) => {
+      if (e.button !== 0) return;
+      const p = toUnits(e);
+      dragging = true; moved = false;
+      downX = e.clientX; downY = e.clientY; downT = performance.now();
+      offX = p.x - com.x; offY = p.y - com.y; tx = com.x; ty = com.y;
+      grabX = clamp(offX / 39, -1, 1) * (Math.cos(ry) < 0 ? -1 : 1); // de que lado do cartão segurou
+      grabY = clamp(offY / 61, -1, 1);
+      cardEl.classList.add("is-dragging");
+      cardEl.setPointerCapture(e.pointerId);
+      wake();
+    });
+    cardEl.addEventListener("pointermove", (e) => {
+      if (dragging) {
+        const p = toUnits(e);
+        tx = p.x - offX; ty = p.y - offY;
+        if (Math.hypot(e.clientX - downX, e.clientY - downY) > 5) moved = true;
+      } else if (canHover && e.pointerType === "mouse") { // inclina na direção do cursor
+        const r = cardEl.getBoundingClientRect();
+        hoverY = clamp(((e.clientX - r.left) / r.width - 0.5) * 2, -1, 1) * 0.26;
+        hoverX = -clamp(((e.clientY - r.top) / r.height - 0.5) * 2, -1, 1) * 0.16;
+      }
+      wake();
+    });
+    cardEl.addEventListener("pointerleave", () => { hoverY = hoverX = 0; wake(); });
+    const release = (e) => {
+      if (!dragging) return;
+      dragging = false;
+      cardEl.classList.remove("is-dragging");
+      const click = e.type === "pointerup" && !moved && performance.now() - downT < 400;
+      if (click) flip();
+      else { // arremesso: quanto mais na borda segurou, mais o cartão gira
+        const vx = (com.x - com.px) / DT;
+        wy = clamp(wy + vx * 0.05 * (0.5 + Math.abs(grabX)) * (grabX < 0 ? -1 : 1), -16, 16);
+      }
+      wake();
+    };
+    cardEl.addEventListener("pointerup", release);
+    cardEl.addEventListener("pointercancel", release);
+    cardEl.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      e.preventDefault();
+      flip();
+    });
+
+    render();
 
     // Balanços automáticos (rolagem e entrada) só em aparelhos com folga;
     // em aparelhos fracos o crachá só se mexe quando é segurado.
@@ -315,10 +431,10 @@
       new IntersectionObserver((entries) => { rigVisible = entries[0].isIntersecting; }).observe(rig);
       window.addEventListener("scroll", () => {
         const dy = window.scrollY - lastScrollY; lastScrollY = window.scrollY;
-        if (rigVisible) push(Math.max(-0.6, Math.min(0.6, dy * 0.004)));
+        if (rigVisible) push(clamp(dy * 0.4, -60, 60));
       }, { passive: true });
       new IntersectionObserver((entries, obs) => {
-        if (entries[0].isIntersecting) { push(2.2); obs.disconnect(); }
+        if (entries[0].isIntersecting) { push(220); obs.disconnect(); }
       }, { threshold: 0.4 }).observe(rig);
     }
   }

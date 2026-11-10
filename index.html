@@ -24,7 +24,7 @@
   <link rel="icon" href="assets/icons/favicon.ico?v=2" sizes="any">
   <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png?v=2">
   <link rel="preload" href="assets/fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/style.css?v=53">
+  <link rel="stylesheet" href="css/style.css?v=54">
   <script>
     (function () {
       var r = document.documentElement, c = navigator.connection || {};
@@ -272,7 +272,7 @@
     <section class="section" id="sobre" data-section>
       <div class="container about">
         <div class="about-card" data-reveal>
-          <!-- Crachá pendurado: a mão (fixa) segura o cordão; cordão + mosquetão + cartão balançam (js/main.js) -->
+          <!-- Crachá pendurado: a mão (fixa) segura o cordão; o cordão dobra, e o cartão balança e gira em 3D (js/main.js) -->
           <div class="badge-rig" data-badge>
             <div class="lanyard-hand" aria-hidden="true">
               <span class="sleeve-ext"></span>
@@ -284,7 +284,8 @@
             <div class="badge-swing" data-badge-swing>
               <div class="lanyard-strap" aria-hidden="true"><span>emanuel(dev)</span></div>
               <img class="lanyard-clasp" src="assets/images/lanyard-clasp.webp" alt="" width="102" height="252" loading="lazy" decoding="async" draggable="false">
-              <article class="badge" data-badge-card aria-label="Crachá de Emanuel Cândido, Engenheiro de Software">
+              <div class="badge-3d" data-badge-card tabindex="0" role="button" aria-pressed="false" aria-label="Virar o crachá">
+              <article class="badge badge-front" aria-label="Crachá de Emanuel Cândido, Engenheiro de Software">
                 <span class="badge-eyelet" aria-hidden="true"></span>
                 <span class="badge-word" aria-hidden="true">dev</span>
                 <img class="badge-person" src="assets/images/emanuel-recorte.webp" decoding="async" alt="Emanuel Cândido, sorrindo, de camisa social branca e gravata preta" width="540" height="750" loading="lazy" draggable="false">
@@ -297,9 +298,22 @@
                   <p class="badge-role"><span>Engenheiro de</span><strong>Software</strong></p>
                 </div>
               </article>
+              <div class="badge badge-back" aria-hidden="true">
+                <span class="badge-eyelet"></span>
+                <p class="back-brand">emanuel<span>(dev)</span></p>
+                <dl class="back-data">
+                  <div><dt>Nome</dt><dd>Emanuel Cândido</dd></div>
+                  <div><dt>Função</dt><dd>Engenheiro de Software</dd></div>
+                  <div><dt>Foco</dt><dd>Backend · APIs REST</dd></div>
+                  <div><dt>Base</dt><dd>Teresina — PI</dd></div>
+                </dl>
+                <div class="back-code"></div>
+                <p class="back-foot">github.com/EmanuelCandido</p>
+              </div>
+              </div>
             </div>
           </div>
-          <p class="badge-hint" aria-hidden="true">Arraste e solte o crachá <svg class="ico" aria-hidden="true"><use href="assets/icons/arrows.svg?v=2#arrow-left-right"></use></svg></p>
+          <p class="badge-hint" aria-hidden="true">Arraste, arremesse ou clique para virar <svg class="ico" aria-hidden="true"><use href="assets/icons/arrows.svg?v=2#arrow-left-right"></use></svg></p>
         </div>
         <div class="about-copy">
           <header class="section-head" data-reveal>
@@ -537,6 +551,6 @@
   </footer>
 
   <div class="toast" role="status" aria-live="polite" data-toast></div>
-  <script src="js/main.js?v=53" defer onerror="document.documentElement.classList.remove('js')"></script>
+  <script src="js/main.js?v=54" defer onerror="document.documentElement.classList.remove('js')"></script>
 </body>
 </html>

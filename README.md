@@ -38,8 +38,9 @@ painel diagonal, nome e cargo). A foto é `emanuel-recorte.webp`: o fundo foi re
 segmentação (rembg/BiRefNet) que gera só a máscara — os pixels da pessoa são os da foto original, sem
 regeneração nem upscaling por IA (verificado pixel a pixel). A mão que segura o cordão
 (`lanyard-hand.webp`) foi gerada pelo Codex; `lanyard-sleeve.webp` é uma fatia da manga esticada até a
-borda da tela. Cordão, mosquetão e cartão balançam como um pêndulo a partir do punho (`js/main.js`):
-dá para arrastar e arremessar.
+borda da tela. O cordão é uma corrente de pontos com física (`js/main.js`), desenhada em SVG: fica esticado com o
+peso do cartão e dobra quando o cartão é levantado. O cartão é 3D, com frente e verso: dá para
+arrastar, arremessar (ele gira no próprio eixo) e clicar para virar.
 
 O fundo tem uma grade que acende só perto do cursor (camada mais clara revelada por máscara).
 

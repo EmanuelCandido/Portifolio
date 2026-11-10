@@ -523,7 +523,18 @@ h1, h2, h3, p { margin: 0; }
   width: 100vw;
   background: url("../assets/images/lanyard-sleeve.webp") left / 100% 100% no-repeat; /* só cobre telas ultralargas */
 }
-.badge-swing { position: relative; margin-top: var(--pivot-y); transform-origin: 50% 0; will-change: transform; }
+.badge-swing { position: relative; margin-top: var(--pivot-y); }
+/* Com JS, o cordão é um traço SVG que dobra (pontos da física em js/main.js);
+   a faixa estática abaixo fica só como reserva (sem JS / movimento reduzido) */
+.badge-rig.is-live .lanyard-strap { visibility: hidden; }
+.lanyard-rope { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.lanyard-rope path { fill: none; stroke-linejoin: round; }
+.rope-edge { stroke: #3a3a3a; stroke-width: 7.06cqw; }
+.rope-body { stroke: #171717; stroke-width: 6.2cqw; }
+.rope-text {
+  font-family: var(--font); font-size: 3.5cqw; font-weight: 600; letter-spacing: .02em;
+  fill: rgba(255,255,255,.9); dominant-baseline: central; text-anchor: middle;
+}
 .lanyard-strap {
   position: relative; overflow: hidden;
   width: 7.06cqw; height: 32cqw;
@@ -543,12 +554,24 @@ h1, h2, h3, p { margin: 0; }
   margin: -0.6cqw auto 0;
   pointer-events: none;
   filter: drop-shadow(0 .8cqw 1cqw rgba(0,0,0,.6));
+  transform-origin: 50% .6cqw; /* ponta do cordão */
+  will-change: transform;
 }
-.badge {
+/* Cartão 3D: gira em qualquer eixo em torno do ilhós (frente e verso) */
+.badge-3d {
   --eye-y: 7.25cqw;
   position: relative; z-index: 1;
   width: 78cqw; aspect-ratio: .64;
   margin: -10.25cqw auto 0;
+  border-radius: 4.5cqw;
+  transform-origin: 50% var(--eye-y);
+  transform-style: preserve-3d;
+  cursor: grab; touch-action: pan-y; will-change: transform;
+}
+.badge-3d.is-dragging { cursor: grabbing; }
+.badge {
+  position: absolute; inset: 0;
+  -webkit-backface-visibility: hidden; backface-visibility: hidden;
   overflow: hidden;
   border-radius: 4.5cqw;
   background:
@@ -558,10 +581,38 @@ h1, h2, h3, p { margin: 0; }
     0 6cqw 10cqw -2cqw rgba(0,0,0,.85),
     inset 0 1px 0 rgba(255,255,255,.12),
     inset 0 0 0 1px rgba(255,255,255,.07);
-  transform-origin: 50% var(--eye-y);
-  cursor: grab; touch-action: pan-y; will-change: transform;
 }
-.badge.is-dragging { cursor: grabbing; }
+/* reflexo que atravessa o cartão conforme ele gira (--sheen / --sheen-o vêm do JS) */
+.badge::after {
+  content: ""; position: absolute; inset: 0; z-index: 5; pointer-events: none;
+  background: linear-gradient(105deg, transparent 32%, rgba(255,255,255,.16) 50%, transparent 68%) no-repeat;
+  background-size: 260% 100%;
+  background-position: var(--sheen, 50%) 0;
+  opacity: var(--sheen-o, 0);
+}
+/* Verso */
+.badge-back {
+  transform: rotateY(180deg);
+  display: flex; flex-direction: column;
+  padding: 17cqw 7cqw 6.5cqw;
+  background:
+    radial-gradient(120% 70% at 25% 30%, rgba(255,255,255,.06), transparent 60%),
+    linear-gradient(195deg, #1a1a1a, #0d0d0d 60%, #0b0b0b);
+}
+.back-brand { font-family: var(--display); font-stretch: var(--wide); font-size: 9cqw; font-weight: 700; letter-spacing: -0.04em; line-height: 1; color: #fff; }
+.back-brand span { color: #8a8a8a; }
+.back-data { display: grid; margin: 7cqw 0 0; border-top: 1px solid rgba(255,255,255,.55); }
+.back-data div { display: grid; gap: .6cqw; padding: 2.6cqw 0; border-bottom: 1px solid rgba(255,255,255,.12); }
+.back-data dt { font-family: var(--mono); font-size: 2.5cqw; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.5); }
+.back-data dd { margin: 0; font-size: 4.3cqw; font-weight: 500; letter-spacing: -0.01em; line-height: 1.15; color: #f2f2f2; }
+.back-code {
+  margin-top: auto; height: 11cqw;
+  background: repeating-linear-gradient(90deg,
+    #e6e6e6 0 .7cqw, transparent .7cqw 1.3cqw, #e6e6e6 1.3cqw 1.6cqw, transparent 1.6cqw 2.9cqw,
+    #e6e6e6 2.9cqw 4cqw, transparent 4cqw 4.5cqw, #e6e6e6 4.5cqw 4.8cqw, transparent 4.8cqw 6cqw);
+  opacity: .85;
+}
+.back-foot { margin-top: 2.4cqw; font-family: var(--mono); font-size: 2.7cqw; letter-spacing: .08em; color: rgba(255,255,255,.6); }
 .badge-eyelet {
   position: absolute; z-index: 2; left: 50%; top: 4.5cqw;
   width: 5.5cqw; aspect-ratio: 1; translate: -50% 0;
