@@ -19,7 +19,8 @@
   --line-3: rgba(255, 255, 255, 0.28);
   --text: #f2f2f2;
   --text-2: #a3a3a3;
-  --text-3: #6b6b6b;
+  --text-3: #8c8c8c; /* texto pequeno e rótulos: ≥ 4,5:1 sobre o fundo e os painéis */
+  --dim: #6b6b6b;    /* só para texto grande decorativo (títulos em dois tons, faixa) */
 
   --display: "Archivo", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font: "Archivo", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -225,8 +226,8 @@ h1, h2, h3, p { margin: 0; }
 .hero-card-tags,
 .hero-card-name,
 .hero-card-year {
-  font-size: max(9px, calc(var(--fw) * .03));
-  color: rgba(242, 242, 242, 0.6);
+  font-size: max(10.5px, calc(var(--fw) * .03));
+  color: rgba(242, 242, 242, 0.66);
   letter-spacing: 0.01em;
   white-space: nowrap;
 }
@@ -238,7 +239,7 @@ h1, h2, h3, p { margin: 0; }
   letter-spacing: -0.035em;
   line-height: 1;
 }
-.hero-card-name { margin-top: calc(var(--fw) * .03); color: rgba(242, 242, 242, 0.42); }
+.hero-card-name { margin-top: calc(var(--fw) * .03); }
 .hero-card-year { margin-top: auto; align-self: flex-end; margin-right: calc(var(--fw) * .1); font-variant-numeric: tabular-nums; }
 
 .hero-foot {
@@ -248,11 +249,20 @@ h1, h2, h3, p { margin: 0; }
   margin: 0 auto;
   padding: 8px 0 34px;
 }
+.hero-id { display: grid; gap: 10px; max-width: 440px; }
+.hero-name {
+  font-family: var(--display); font-stretch: var(--wide);
+  font-size: clamp(28px, 3.2vw, 42px);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+}
 .hero-intro {
-  max-width: 420px;
   font-size: 15px;
   color: var(--text-2);
 }
+.hero-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 10px; }
+.hero-actions .scroll-cue { margin-left: 14px; }
 .scroll-cue {
   display: inline-flex; align-items: center; gap: 10px;
   font-size: 13px; color: var(--text-2);
@@ -279,7 +289,7 @@ h1, h2, h3, p { margin: 0; }
 }
 .is-loaded .hero-foot {
   opacity: 1; transform: none;
-  transition: opacity 1s var(--ease) .9s, transform 1s var(--ease) .9s;
+  transition: opacity 1s var(--ease) .4s, transform 1s var(--ease) .4s;
 }
 
 /* ---------- Seções ---------- */
@@ -298,7 +308,7 @@ h1, h2, h3, p { margin: 0; }
   line-height: 1;
   letter-spacing: -0.04em;
 }
-.dim { color: var(--text-3); }
+.dim { color: var(--dim); }
 .section-lead { font-size: 17px; color: var(--text-2); max-width: 560px; }
 
 .tags { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -397,6 +407,23 @@ h1, h2, h3, p { margin: 0; }
   object-fit: cover; object-position: 50% 30%;
   transition: object-position .8s var(--ease);
 }
+
+/* Botão "Tocar prévia": só existe quando os vídeos não tocam sozinhos
+   (economia de dados ou movimento reduzido); criado pelo JS ao lado da folha */
+.sheet-play {
+  position: absolute; z-index: 3; top: 26px; right: 26px;
+  display: inline-flex; align-items: center; gap: 8px;
+  min-height: 40px; padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid var(--line-3);
+  background: rgba(10, 10, 10, .86);
+  color: var(--text);
+  font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase;
+  cursor: pointer;
+  transition: background .3s var(--ease), border-color .3s var(--ease);
+}
+.sheet-play:hover { background: #000; border-color: var(--text); }
+.sheet-play svg { width: 10px; height: 10px; fill: currentColor; }
 
 /* A frente da pasta cobre a base da folha quando fechada */
 .folder-front {
@@ -600,7 +627,7 @@ h1, h2, h3, p { margin: 0; }
   font-size: clamp(22px, 3vw, 36px);
   font-weight: 500;
   letter-spacing: -0.03em;
-  color: var(--text-3);
+  color: var(--dim);
   white-space: nowrap;
 }
 .marquee li::after { content: "/"; margin-left: 56px; color: #2c2c2c; }
@@ -701,7 +728,7 @@ h1, h2, h3, p { margin: 0; }
   box-shadow: inset 0 0 0 1px rgba(255,255,255,.16);
 }
 .contact-card-label,
-.contact-card-foot { font-family: var(--mono); font-size: max(8px, calc(var(--cw) * .026)); letter-spacing: .08em; text-transform: uppercase; color: rgba(242,242,242,.5); }
+.contact-card-foot { font-family: var(--mono); font-size: max(10px, calc(var(--cw) * .026)); letter-spacing: .08em; text-transform: uppercase; color: rgba(242,242,242,.62); }
 /* Email do cartão: usuário em Archivo fina e grande (com leve brilho metálico),
    domínio em Fragment Mono espaçada, como impresso num cartão de visita */
 .contact-card-mail {
@@ -729,9 +756,9 @@ h1, h2, h3, p { margin: 0; }
 .contact-card-mail:focus-visible .mail-user::after { transform: scaleX(1); }
 .mail-domain {
   font-family: var(--mono);
-  font-size: max(9px, calc(var(--cw) * .03));
+  font-size: max(10px, calc(var(--cw) * .03));
   letter-spacing: .14em;
-  color: rgba(242,242,242,.55);
+  color: rgba(242,242,242,.66);
 }
 .js .contact-stage[data-reveal] { transform: none; }
 .js .contact-stage[data-reveal] .contact-hand,
@@ -848,6 +875,7 @@ h1, h2, h3, p { margin: 0; }
 }
 
 @media (max-width: 1000px) {
+  .scroll-cue span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .why { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .why-card:nth-child(2) { border-right: 0; }
   .why-card:nth-child(-n+2) { border-bottom: 1px solid var(--line-2); }
@@ -871,8 +899,21 @@ h1, h2, h3, p { margin: 0; }
   }
   .container { width: calc(100% - 32px); }
   .nav { padding: 14px 8px; }
-  .nav-pill a { padding: 7px 11px; font-size: 13px; }
-  .hero-foot { flex-direction: column; align-items: flex-start; width: calc(100% - 32px); }
+  .nav-pill a { padding: 9px 11px; font-size: 13px; }
+  .nav-extra { display: none; } /* "Sobre mim" vira "Sobre" */
+  /* O menu rola de lado: as bordas esmaecem para o lado em que ainda há itens
+     (classes can-left / can-right aplicadas pelo JS) */
+  .nav-pill {
+    --fade-l: 0px; --fade-r: 0px;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent);
+  }
+  .nav-pill.can-left { --fade-l: 36px; }
+  .nav-pill.can-right { --fade-r: 36px; }
+  .hero-foot { flex-direction: column; align-items: stretch; gap: 18px; width: calc(100% - 32px); padding-bottom: 26px; }
+  .hero-actions { justify-content: flex-start; }
+  .hero-actions .scroll-cue { margin-left: auto; }
+  .sheet-play { top: 20px; right: 20px; }
   .why { grid-template-columns: 1fr; }
   .why-card { border-right: 0; border-bottom: 1px solid var(--line-2); }
   .why-card:last-child { border-bottom: 0; }

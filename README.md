@@ -51,9 +51,11 @@ pelo teclado), crescem até a proporção real do vídeo — só com o mouse sob
 
 ## Desempenho (celulares fracos e redes lentas)
 
-- Um script no `<head>` marca a página com `save-data` (rede 2G/3G ou "economia de dados") e
-  `lite` (aparelho com até 4 GB de RAM ou 4 núcleos).
-- `save-data`: vídeos dos projetos não são baixados (só o pôster).
+- Um script no `<head>` marca a página com `save-data` (rede 2G ou "economia de dados" ligada) e
+  `lite` (aparelho com até 2 GB de RAM ou 2 núcleos, ou 4 GB e 4 núcleos ao mesmo tempo).
+  Rede "3g" não conta: o navegador reporta isso em muita conexão boa.
+- `save-data` (e "movimento reduzido"): os vídeos não tocam sozinhos; fica o pôster com um botão
+  "Tocar prévia".
 - `lite`: sem `backdrop-filter`, sem balanços automáticos do crachá (só ao segurar) e efeitos de
   luz mais simples.
 - Pôsteres dos vídeos carregam só quando a pasta se aproxima da tela; vídeos tocam só quando visíveis.
@@ -61,6 +63,7 @@ pelo teclado), crescem até a proporção real do vídeo — só com o mouse sob
   sem a extensão de manga (≈4 MB decodificada em vez de ≈13 MB).
 - Animações infinitas pausam fora da tela; seções simples usam `content-visibility: auto`.
 - Em telas pequenas a navbar some ao rolar para baixo e volta ao rolar para cima.
+- O menu rola de lado em telas pequenas; as bordas esmaecem para o lado em que há itens escondidos.
 
 ## Rodar localmente
 

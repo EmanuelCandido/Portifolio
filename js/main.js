@@ -53,7 +53,17 @@
   const indicator = document.querySelector("[data-nav-indicator]");
   const pill = indicator?.parentElement;
 
+  /* Menu que rola de lado (telas pequenas): marca para que lado ainda há itens escondidos */
+  const updatePillFade = () => {
+    if (!pill) return;
+    const max = pill.scrollWidth - pill.clientWidth;
+    pill.classList.toggle("can-left", pill.scrollLeft > 4);
+    pill.classList.toggle("can-right", pill.scrollLeft < max - 4);
+  };
+  pill?.addEventListener("scroll", updatePillFade, { passive: true });
+
   const moveIndicator = (link) => {
+    updatePillFade();
     if (!indicator || !link) return;
     indicator.style.width = `${link.offsetWidth}px`;
     indicator.style.transform = `translateX(${link.offsetLeft}px)`;
@@ -113,23 +123,40 @@
   }, { rootMargin: "700px 0px" });
   videos.forEach((v) => posterObserver.observe(v));
 
-  /* ...e tocam quando a pasta está visível (em rede lenta / economia de dados: só o pôster) */
+  /* ...e tocam quando a pasta está visível */
+  const startVideo = (video) => {
+    if (video.preload === "none") { video.preload = "auto"; video.load(); }
+    video.play().catch(() => {});
+  };
+  const videoObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) startVideo(entry.target);
+        else entry.target.pause();
+      });
+    },
+    { threshold: 0.35 }
+  );
   if (!reduceMotion && !saveData) {
-    const videoObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const video = entry.target;
-          if (entry.isIntersecting) {
-            if (video.preload === "none") { video.preload = "auto"; video.load(); }
-            video.play().catch(() => {});
-          } else {
-            video.pause();
-          }
-        });
-      },
-      { threshold: 0.35 }
-    );
     videos.forEach((v) => videoObserver.observe(v));
+  } else {
+    /* Economia de dados ou movimento reduzido: fica só o pôster, com um botão para tocar */
+    videos.forEach((video) => {
+      const sheet = video.closest(".folder-sheet");
+      const name = video.closest("[data-folder]")?.querySelector(".folder-title")?.textContent.trim();
+      if (!sheet) return;
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "sheet-play";
+      btn.innerHTML = '<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 0.5v9l8-4.5z"/></svg><span>Tocar prévia</span>';
+      if (name) btn.setAttribute("aria-label", `Tocar prévia de ${name}`);
+      btn.addEventListener("click", () => {
+        btn.remove();
+        startVideo(video);
+        videoObserver.observe(video); // daqui em diante pausa fora da tela, como os demais
+      });
+      sheet.after(btn);
+    });
   }
 
   /* Pastas: a folha fecha em 16:9 e abre na proporção real do vídeo (sem cortar) */

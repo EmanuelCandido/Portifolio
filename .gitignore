@@ -1,1 +1,18 @@
 .idea/
+# Originais pesados das imagens (PNGs gerados e referências): ficam só na pasta local.
+# O site usa apenas as versões otimizadas em assets/images.
+assets/source/
+
+# Configuração local do Claude Code
+.claude/
+
+# Lixo do sistema
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Arquivos de apoio que o site não usa
+assets/icons/arrow-preview.html
+assets/images/badge-card.webp
+assets/projects/barbearia.mp4
+assets/projects/linktree.mp4

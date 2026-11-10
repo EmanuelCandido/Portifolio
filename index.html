@@ -24,7 +24,7 @@
   <link rel="icon" href="assets/icons/favicon.ico?v=2" sizes="any">
   <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png?v=2">
   <link rel="preload" href="assets/fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/style.css?v=52">
+  <link rel="stylesheet" href="css/style.css?v=53">
   <script>
     (function () {
       var r = document.documentElement, c = navigator.connection || {};
@@ -32,10 +32,12 @@
       // Proteção: a classe "js" esconde os blocos até o main.js revelá-los. Se ele não
       // rodar em 4 s (arquivo não chegou ou deu erro), tira a classe e mostra tudo sem animação.
       setTimeout(function () { if (!r.classList.contains("js-ok")) r.classList.remove("js"); }, 4000);
-      // rede lenta ou "economia de dados": não baixa vídeos e evita efeitos caros
-      var slow = !!c.saveData || /(^|-)2g|3g/.test(c.effectiveType || "");
-      // aparelho fraco: pouca memória ou poucos núcleos
-      var weak = (navigator.deviceMemory && navigator.deviceMemory <= 4) || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4);
+      // "economia de dados" ligada ou rede 2G: os vídeos só tocam se a pessoa pedir.
+      // ("3g" fica de fora: o navegador reporta isso em muita conexão boa.)
+      var slow = !!c.saveData || /(^|-)2g$/.test(c.effectiveType || "");
+      // aparelho fraco: até 2 GB / 2 núcleos, ou 4 GB e 4 núcleos ao mesmo tempo
+      var mem = navigator.deviceMemory || 0, cores = navigator.hardwareConcurrency || 0;
+      var weak = (mem && mem <= 2) || (cores && cores <= 2) || (mem && mem <= 4 && cores && cores <= 4);
       if (slow) r.classList.add("save-data");
       if (slow || weak) r.classList.add("lite");
     })();
@@ -55,7 +57,7 @@
       <span class="nav-indicator" aria-hidden="true" data-nav-indicator></span>
       <a href="#inicio" class="is-active" data-nav-link>Início</a>
       <a href="#portfolio" data-nav-link>Portfólio</a>
-      <a href="#sobre" data-nav-link>Sobre mim</a>
+      <a href="#sobre" data-nav-link>Sobre<span class="nav-extra"> mim</span></a>
       <a href="#por-que-eu" data-nav-link>Por que eu</a>
       <a href="#pesquisa" data-nav-link>Pesquisa</a>
       <a href="#contato" data-nav-link>Contato</a>
@@ -66,7 +68,6 @@
 
     <!-- 00 · Início -->
     <section class="hero" id="inicio" data-section>
-      <h1 class="sr-only">Emanuel Cândido — Portfólio de Engenharia de Software</h1>
       <div class="hero-stage" data-hero>
         <img class="hero-hand" src="assets/images/hero-hand.webp" srcset="assets/images/hero-hand-640.webp 640w, assets/images/hero-hand-1024.webp 1024w, assets/images/hero-hand.webp 1536w" sizes="(max-aspect-ratio: 1/1) 213vw, 120vw" alt="" width="1536" height="1024" fetchpriority="high" decoding="async" data-hero-img>
         <div class="hero-card" data-hero-card>
@@ -77,14 +78,21 @@
         </div>
       </div>
       <div class="hero-foot">
-        <p class="hero-intro">
-          Engenheiro de Software em formação. Construo APIs, sistemas web e interfaces
-          com foco em arquitetura, clareza e uso real.
-        </p>
-        <a class="scroll-cue" href="#portfolio">
-          <span>Abrir a pasta</span>
-          <svg class="ico" aria-hidden="true"><use href="assets/icons/arrows.svg?v=2#arrow-down"></use></svg>
-        </a>
+        <div class="hero-id">
+          <h1 class="hero-name">Emanuel Cândido <span class="sr-only">— Portfólio de Engenharia de Software</span></h1>
+          <p class="hero-intro">
+            Engenheiro de Software em formação. Construo APIs, sistemas web e interfaces
+            com foco em arquitetura, clareza e uso real.
+          </p>
+        </div>
+        <div class="hero-actions">
+          <a class="btn btn-solid" href="#contato">Falar comigo</a>
+          <a class="btn" href="assets/documents/curriculo-emanuel-candido.pdf" target="_blank" rel="noopener noreferrer">Currículo <svg class="ico" aria-hidden="true"><use href="assets/icons/arrows.svg?v=2#arrow-up-right"></use></svg></a>
+          <a class="scroll-cue" href="#portfolio">
+            <span>Abrir a pasta</span>
+            <svg class="ico" aria-hidden="true"><use href="assets/icons/arrows.svg?v=2#arrow-down"></use></svg>
+          </a>
+        </div>
       </div>
     </section>
 
@@ -177,7 +185,7 @@
           <article class="folder" data-reveal data-folder>
             <div class="folder-tab"><span>04 / Eco City</span></div>
             <div class="folder-body">
-              <a class="folder-sheet" href="https://github.com/EmanuelCandido/Jogo_INOVATECH" target="_blank" rel="noopener noreferrer" aria-label="Eco City no GitHub">
+              <a class="folder-sheet" href="https://emanuelcandido.github.io/Jogo_INOVATECH/" target="_blank" rel="noopener noreferrer" aria-label="Jogar Eco City no navegador">
                 <video muted loop playsinline preload="none" data-poster="assets/projects/eco.webp?v=2" aria-label="Prévia animada do jogo Eco City">
                   <source src="assets/projects/eco-sm.mp4?v=2" media="(max-width: 720px)" type="video/mp4">
                   <source src="assets/projects/eco.mp4?v=2" type="video/mp4">
@@ -192,6 +200,7 @@
                 </p>
                 <ul class="tags"><li>3D no navegador</li><li>Sustentabilidade</li></ul>
                 <div class="folder-links">
+                  <a href="https://emanuelcandido.github.io/Jogo_INOVATECH/" target="_blank" rel="noopener noreferrer">Jogar <svg class="ico" aria-hidden="true"><use href="assets/icons/arrows.svg?v=2#arrow-up-right"></use></svg></a>
                   <a href="https://github.com/EmanuelCandido/Jogo_INOVATECH" target="_blank" rel="noopener noreferrer">Repositório <svg class="ico" aria-hidden="true"><use href="assets/icons/arrows.svg?v=2#arrow-up-right"></use></svg></a>
                 </div>
               </div>
@@ -201,7 +210,7 @@
           <article class="folder" data-reveal data-folder>
             <div class="folder-tab"><span>05 / TopNote</span></div>
             <div class="folder-body">
-              <a class="folder-sheet" href="https://github.com/EmanuelCandido/TopNote" target="_blank" rel="noopener noreferrer" aria-label="TopNote no GitHub">
+              <a class="folder-sheet" href="https://github.com/EmanuelCandido/TopNote" target="_blank" rel="noopener noreferrer" aria-label="TopNote no GitHub" data-ratio="0.5625">
                 <video muted loop playsinline preload="none" data-poster="assets/projects/topnote.webp?v=2" aria-label="Prévia animada do aplicativo TopNote">
                   <source src="assets/projects/topnote-sm.mp4?v=2" media="(max-width: 720px)" type="video/mp4">
                   <source src="assets/projects/topnote.mp4?v=2" type="video/mp4">
@@ -225,12 +234,12 @@
           <article class="folder" data-reveal data-folder>
             <div class="folder-tab"><span>06 / NOMA</span></div>
             <div class="folder-body">
-              <div class="folder-sheet" tabindex="0" aria-label="Prévia da loja NOMA">
+              <a class="folder-sheet" href="https://noma-demo-six.vercel.app/" target="_blank" rel="noopener noreferrer" aria-label="Abrir a demonstração da loja NOMA">
                 <video muted loop playsinline preload="none" data-poster="assets/projects/noma.webp?v=2" aria-label="Prévia animada da loja NOMA: vitrine, carrinho, filtros e busca">
                   <source src="assets/projects/noma-sm.mp4?v=2" media="(max-width: 720px)" type="video/mp4">
                   <source src="assets/projects/noma.mp4?v=2" type="video/mp4">
                 </video>
-              </div>
+              </a>
               <div class="folder-front">
                 <div class="folder-meta"><span>E-commerce</span><span>Full Stack</span></div>
                 <h3 class="folder-title">NOMA — Loja de Roupas</h3>
@@ -239,6 +248,9 @@
                   e carrinho que fecha o pedido pelo WhatsApp.
                 </p>
                 <ul class="tags"><li>MongoDB</li><li>Redis</li><li>Supabase</li><li>WhatsApp</li></ul>
+                <div class="folder-links">
+                  <a href="https://noma-demo-six.vercel.app/" target="_blank" rel="noopener noreferrer">Demo <svg class="ico" aria-hidden="true"><use href="assets/icons/arrows.svg?v=2#arrow-up-right"></use></svg></a>
+                </div>
               </div>
             </div>
           </article>
@@ -525,6 +537,6 @@
   </footer>
 
   <div class="toast" role="status" aria-live="polite" data-toast></div>
-  <script src="js/main.js?v=52" defer onerror="document.documentElement.classList.remove('js')"></script>
+  <script src="js/main.js?v=53" defer onerror="document.documentElement.classList.remove('js')"></script>
 </body>
 </html>
