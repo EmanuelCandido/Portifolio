@@ -321,7 +321,7 @@ h1, h2, h3, p { margin: 0; }
 }
 
 .btn {
-  display: inline-flex; align-items: center; justify-content: center;
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
   padding: 11px 18px;
   border-radius: 11px;
   border: 1px solid var(--line-2);
@@ -848,13 +848,12 @@ h1, h2, h3, p { margin: 0; }
 .channel-name { font-family: var(--display); font-stretch: var(--wide); font-size: 20px; font-weight: 600; letter-spacing: -0.03em; }
 .channel-handle { font-size: 14px; color: var(--text-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .channel-go { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-3); transition: color .3s; }
-.channel .ico { width: 22px; height: 22px; fill: none; stroke: currentColor; transition: transform .5s var(--ease); }
+.channel .ico { width: 22px; height: 22px; transition: transform .5s var(--ease); }
 .channel:hover, .channel:focus-visible { padding-left: 14px; }
 .channel:hover::before, .channel:focus-visible::before { opacity: 1; }
 .channel:hover .channel-go, .channel:hover .channel-handle { color: var(--text); }
 .channel:hover .ico { transform: translate(3px, -3px); }
 .channel--copy:hover .ico { transform: translateX(4px); }
-.ico { fill: none; stroke: currentColor; }
 
 .form {
   display: grid; gap: 14px;
@@ -987,8 +986,9 @@ h1, h2, h3, p { margin: 0; }
   .channel .ico { grid-column: 3; grid-row: 1 / span 2; }
 }
 
-/* Ícones de seta (sprite assets/icons/arrows.svg, gerado pelo Codex) */
-.ico { display: inline-block; width: 1em; height: 1em; vertical-align: -0.14em; fill: none; stroke: currentColor; }
+/* Ícones de seta (sprite assets/icons/arrows.svg): setas cheias e arredondadas;
+   preenchimento e contorno vêm do próprio sprite, sempre em currentColor */
+.ico { display: inline-block; width: 1em; height: 1em; vertical-align: -0.14em; }
 .folder-links .ico, .chip .ico, .footer .ico { width: 1.05em; height: 1.05em; margin-left: 2px; }
 .badge-hint .ico { width: 16px; height: 16px; vertical-align: -3px; }
 
