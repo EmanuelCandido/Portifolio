@@ -1,23 +1,23 @@
 <svg xmlns="http://www.w3.org/2000/svg">
-  <!-- Setas cheias e arredondadas (conceito I). Geradas por assets/source/arrows/build_svg.py. -->
+  <!-- Setas cheias e arredondadas (conceito I, proporções do Q). Geradas por assets/source/arrows/build_svg.py. -->
   <symbol id="arrow-up-right" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-    <path fill="none" stroke-width="3.4" d="M6.302 17.698L15 9"/>
-    <path stroke-width="2.4" d="M18.2 5.8L18.2 10.703L13.297 5.8Z"/>
+    <path fill="none" stroke-width="3.6" d="M7.273 16.727L14 10"/>
+    <path stroke-width="2.4" d="M16.8 7.2L16.8 13.103L10.897 7.2Z"/>
   </symbol>
   <symbol id="arrow-down" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-    <path fill="none" stroke-width="3.4" d="M12 4.2L12 16"/>
-    <path stroke-width="2.4" d="M12 19.803L8.18 15.982L15.82 15.982Z"/>
+    <path fill="none" stroke-width="3.6" d="M12 5.3L12 15"/>
+    <path stroke-width="2.4" d="M12 18.803L7.826 14.629L16.174 14.629Z"/>
   </symbol>
   <symbol id="arrow-up" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-    <path fill="none" stroke-width="3.4" d="M12 19.8L12 8"/>
-    <path stroke-width="2.4" d="M12 4.197L15.82 8.018L8.18 8.018Z"/>
+    <path fill="none" stroke-width="3.6" d="M12 18.7L12 9"/>
+    <path stroke-width="2.4" d="M12 5.197L16.174 9.371L7.826 9.371Z"/>
   </symbol>
   <symbol id="arrow-right" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-    <path fill="none" stroke-width="3.4" d="M4.2 12L16 12"/>
-    <path stroke-width="2.4" d="M19.803 12L15.982 15.82L15.982 8.18Z"/>
+    <path fill="none" stroke-width="3.6" d="M5.3 12L15 12"/>
+    <path stroke-width="2.4" d="M18.803 12L14.629 16.174L14.629 7.826Z"/>
   </symbol>
   <symbol id="arrow-left-right" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-    <path fill="none" stroke-width="3.4" d="M7 12L17 12"/>
-    <path stroke-width="2.4" d="M3.197 12L6.664 8.533L6.664 15.467ZM20.803 12L17.336 15.467L17.336 8.533Z"/>
+    <path fill="none" stroke-width="3.6" d="M7.5 12L16.5 12"/>
+    <path stroke-width="2.4" d="M4.197 12L7.664 8.533L7.664 15.467ZM19.803 12L16.336 15.467L16.336 8.533Z"/>
   </symbol>
 </svg>
