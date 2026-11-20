@@ -45,6 +45,12 @@ Site estático no GitHub Pages; formulário via FormSubmit.
 - 2026-11-19 — Contato na ordem LinkedIn, Email, Currículo, GitHub, WhatsApp, Instagram — recrutador procura LinkedIn, email e currículo primeiro; WhatsApp e Instagram mantidos a pedido do dono.
 - 2026-11-19 — Email do site é emanoelcandidolima@gmail.com (confirmado pelo dono).
 - 2026-11-19 — Dica "passe o mouse" escondida em telas de toque — lá as pastas já ficam abertas.
+- 2026-11-19 — Currículo é o botão principal no Início e no Sobre — é o que o recrutador procura primeiro.
+- 2026-11-19 — "Certificado" em Pesquisa é rótulo de texto (`.pub-note`), não chip — chip tem cara de botão e ele não abre nada.
+- 2026-11-19 — Rótulos "Abrir/Copiar/Copiado" do Contato com largura fixa — a linha não muda ao copiar.
+- 2026-11-19 — Títulos com `text-wrap: balance` e parágrafos com `pretty` — sem palavra sozinha na última linha.
+- 2026-11-19 — Cor de erro virou o token `--danger`.
+- 2026-11-19 — Terê Burg fica sem link — decisão do dono; não há repositório público.
 
 ## Perguntas em aberto
-- Acabamentos ainda não aplicados: largura fixa no "Copiar/Copiado", botão principal igual no Início e no Sobre, "Certificado" com cara de botão, `text-wrap: pretty`, Terê Burg sem link, token para a cor de erro.
+- Nenhuma no momento.
