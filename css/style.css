@@ -688,11 +688,12 @@ h1, h2, h3, p { margin: 0; }
   overflow: hidden;
   background: rgba(10,10,10,0.6);
 }
+/* Cada card ocupa 3 linhas da grade (título, texto, links) e herda as linhas dos vizinhos:
+   títulos, textos e links começam na mesma altura nos quatro cards */
 .why-card {
   position: relative;
-  display: grid; align-content: start; gap: 14px;
+  display: grid; grid-row: span 3; grid-template-rows: subgrid; align-content: start; row-gap: 14px;
   padding: 30px 26px 30px;
-  min-height: 340px;
   border-right: 1px solid var(--line-2);
   isolation: isolate;
 }
@@ -705,8 +706,11 @@ h1, h2, h3, p { margin: 0; }
 .why-card:hover::before { opacity: 1; }
 .why-card h3 { font-family: var(--display); font-stretch: var(--wide); font-size: 24px; font-weight: 600; letter-spacing: -0.03em; }
 .why-card p { color: var(--text-2); font-size: 15px; }
-.why-card .tags { margin-top: auto; padding-top: 8px; }
+.why-links { display: flex; gap: 8px; flex-wrap: wrap; align-content: start; padding-top: 8px; }
 
+
+/* A dica "passe o mouse" só aparece onde as pastas abrem com o mouse */
+@media (hover: none) { .hover-hint { display: none; } }
 
 /* ---------- Pesquisa ---------- */
 .pubs { border-top: 1px solid var(--line-2); }
@@ -812,7 +816,6 @@ h1, h2, h3, p { margin: 0; }
   row-gap: 40px;
   gap: clamp(40px, 6vw, 96px);
   align-items: start;
-  margin-top: -40px;
 }
 .contact-layout .section-head { grid-area: head; margin-bottom: 0; }
 .channels { grid-area: channels; border-top: 1px solid var(--line-2); align-self: start; }
@@ -916,7 +919,6 @@ h1, h2, h3, p { margin: 0; }
   .why { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .why-card:nth-child(2) { border-right: 0; }
   .why-card:nth-child(-n+2) { border-bottom: 1px solid var(--line-2); }
-  .why-card { min-height: 0; }
   .contact-layout { grid-template-columns: 1fr; grid-template-areas: "head" "channels" "form"; grid-template-rows: auto; margin-top: 0; }
 }
 

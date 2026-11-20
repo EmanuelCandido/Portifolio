@@ -24,7 +24,7 @@
   <link rel="icon" href="assets/icons/favicon.ico?v=2" sizes="any">
   <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png?v=2">
   <link rel="preload" href="assets/fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/style.css?v=57">
+  <link rel="stylesheet" href="css/style.css?v=59">
   <script>
     (function () {
       var r = document.documentElement, c = navigator.connection || {};
@@ -100,7 +100,7 @@
       <div class="container">
         <header class="section-head" data-reveal>
           <h2 class="section-title">Arquivos <span class="dim">selecionados.</span></h2>
-          <p class="section-lead">
+          <p class="section-lead hover-hint">
             Passe o mouse para abrir cada pasta.
           </p>
         </header>
@@ -368,29 +368,39 @@
     <section class="section" id="por-que-eu" data-section>
       <div class="container">
         <header class="section-head" data-reveal>
-          <h2 class="section-title">O que eu <span class="dim">entrego.</span></h2>
+          <h2 class="section-title">Por que <span class="dim">eu?</span></h2>
         </header>
 
         <ol class="why">
           <li class="why-card" data-reveal data-spot>
-            <h3>Backend &amp; APIs</h3>
-            <p>APIs REST com autenticação, validações, regras de acesso e organização em camadas.</p>
-            <ul class="tags"><li>Java</li><li>Spring Boot</li><li>JWT</li></ul>
+            <h3>API com IA generativa</h3>
+            <p>A API em Spring Boot do ClinicCase orquestra várias LLMs com RAG e gera um caso clínico completo em 15 a 25 segundos.</p>
+            <div class="why-links">
+              <a class="chip chip-solid" href="https://cliniccase.site" target="_blank" rel="noopener noreferrer">ClinicCase <svg class="ico" aria-hidden="true"><use href="assets/icons/arrows.svg?v=4#arrow-up-right"></use></svg></a>
+              <a class="chip" href="https://github.com/EmanuelCandido/ClinicCase" target="_blank" rel="noopener noreferrer">Código <svg class="ico" aria-hidden="true"><use href="assets/icons/arrows.svg?v=4#arrow-up-right"></use></svg></a>
+            </div>
           </li>
           <li class="why-card" data-reveal data-spot>
-            <h3>Banco de dados</h3>
-            <p>Modelagem de tabelas, relacionamentos, consultas SQL e integridade pensada desde o início.</p>
-            <ul class="tags"><li>PostgreSQL</li><li>JPA</li><li>H2</li></ul>
+            <h3>Pesquisa apresentada</h3>
+            <p>Iniciação científica (PIBIC) com dois artigos e um painel no DELTA SAÚDE 2026, todos sobre o ClinicCase.</p>
+            <div class="why-links">
+              <a class="chip chip-solid" href="#pesquisa">Artigos <svg class="ico" aria-hidden="true"><use href="assets/icons/arrows.svg?v=4#arrow-down"></use></svg></a>
+            </div>
           </li>
           <li class="why-card" data-reveal data-spot>
-            <h3>Interfaces</h3>
-            <p>Telas responsivas, que funcionam no computador e no celular.</p>
-            <ul class="tags"><li>HTML</li><li>CSS</li><li>React</li></ul>
+            <h3>Projetos no ar</h3>
+            <p>O ClinicCase, a loja NOMA e o jogo Eco City estão publicados e podem ser abertos agora.</p>
+            <div class="why-links">
+              <a class="chip chip-solid" href="https://noma-demo-six.vercel.app/" target="_blank" rel="noopener noreferrer">NOMA <svg class="ico" aria-hidden="true"><use href="assets/icons/arrows.svg?v=4#arrow-up-right"></use></svg></a>
+              <a class="chip" href="https://emanuelcandido.github.io/Jogo_INOVATECH/" target="_blank" rel="noopener noreferrer">Eco City <svg class="ico" aria-hidden="true"><use href="assets/icons/arrows.svg?v=4#arrow-up-right"></use></svg></a>
+            </div>
           </li>
           <li class="why-card" data-reveal data-spot>
-            <h3>Versionamento</h3>
-            <p>Projetos organizados no GitHub, com branches, commits claros e repositórios mantidos.</p>
-            <ul class="tags"><li>Git</li><li>GitHub</li><li>Deploy</li></ul>
+            <h3>Do banco à tela</h3>
+            <p>ClinicCase, Barbearia e NOMA são Full Stack, do modelo de dados à interface.</p>
+            <div class="why-links">
+              <a class="chip chip-solid" href="#portfolio">Projetos <svg class="ico" aria-hidden="true"><use href="assets/icons/arrows.svg?v=4#arrow-up"></use></svg></a>
+            </div>
           </li>
         </ol>
       </div>
@@ -473,6 +483,14 @@
 
         <ul class="channels" data-reveal>
           <li>
+            <a class="channel" href="https://www.linkedin.com/in/emanuelcandidodasilvalima" target="_blank" rel="noopener noreferrer">
+              <span class="channel-name">LinkedIn</span>
+              <span class="channel-handle">emanuelcandidodasilvalima</span>
+              <span class="channel-go">Abrir</span>
+              <svg class="ico" aria-hidden="true"><use href="assets/icons/arrows.svg?v=4#arrow-up-right"></use></svg>
+            </a>
+          </li>
+          <li>
             <button class="channel channel--copy" type="button" data-copy="emanoelcandidolima@gmail.com">
               <span class="channel-name">Email</span>
               <span class="channel-handle">emanoelcandidolima@gmail.com</span>
@@ -481,9 +499,9 @@
             </button>
           </li>
           <li>
-            <a class="channel" href="https://wa.me/5589999928573?text=Ol%C3%A1%2C%20Emanuel!%20Vim%20pelo%20seu%20portf%C3%B3lio." target="_blank" rel="noopener noreferrer">
-              <span class="channel-name">WhatsApp</span>
-              <span class="channel-handle">Resposta mais rápida</span>
+            <a class="channel" href="assets/documents/curriculo-emanuel-candido.pdf" target="_blank" rel="noopener noreferrer">
+              <span class="channel-name">Currículo</span>
+              <span class="channel-handle">PDF</span>
               <span class="channel-go">Abrir</span>
               <svg class="ico" aria-hidden="true"><use href="assets/icons/arrows.svg?v=4#arrow-up-right"></use></svg>
             </a>
@@ -497,9 +515,9 @@
             </a>
           </li>
           <li>
-            <a class="channel" href="https://www.linkedin.com/in/emanuelcandidodasilvalima" target="_blank" rel="noopener noreferrer">
-              <span class="channel-name">LinkedIn</span>
-              <span class="channel-handle">emanuelcandidodasilvalima</span>
+            <a class="channel" href="https://wa.me/5589999928573?text=Ol%C3%A1%2C%20Emanuel!%20Vim%20pelo%20seu%20portf%C3%B3lio." target="_blank" rel="noopener noreferrer">
+              <span class="channel-name">WhatsApp</span>
+              <span class="channel-handle">Resposta mais rápida</span>
               <span class="channel-go">Abrir</span>
               <svg class="ico" aria-hidden="true"><use href="assets/icons/arrows.svg?v=4#arrow-up-right"></use></svg>
             </a>
